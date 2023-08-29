@@ -2,24 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreTaskRequest;
 use App\Models\Task;
 use Auth;
-use Illuminate\Http\Request;
 use Response;
-use Validator;
 
 class TaskController extends Controller
 {
     private const ITEMS_PER_PAGE = 5;
 
-    public function __construct(private Request $request)
+    public function __construct(private StoreTaskRequest $request)
     {
     }
 
     public function create()
     {
-        $this->validatePayload();
-
         return Response::json([
             'data' => Task::create($this->request)
         ], 201);
@@ -32,7 +29,6 @@ class TaskController extends Controller
         // check if task exists
         $task = Task::findOrFail($id);
         $this->checkUserIsOwner($task);
-        $this->validatePayload();
 
         Task::where('id', $id)->update([
             'title' => $data['title'],
@@ -54,17 +50,6 @@ class TaskController extends Controller
         $this->checkUserIsOwner($task);
 
         return Response::json(['data' => $task], 200);
-    }
-
-    private function validatePayload(): void
-    {
-        Validator::make($this->request->all(),
-        [
-            'title' => 'required|min:3|max:100',
-            'status' => 'required',
-            'priority' => 'required',
-            'order' => 'required'
-        ]);
     }
 
     public function delete($id)

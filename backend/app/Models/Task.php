@@ -26,12 +26,6 @@ class Task extends Model
         return $task;
     }
 
-    public function setDueDate(DateTime $dueDate)
-    {
-        $this->dueDate = $dueDate->format('U');
-    }
-
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
