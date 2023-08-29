@@ -18,6 +18,7 @@ class StoreTaskRequest extends FormRequest
         // Check if route is update. Check if the user is the owner of the task
         if (request()->method() === "PUT") {
             $task = Task::findOrFail(app('request')->segment(3));
+            dd(Auth::user());
             if($task->user_id !== Auth::user()->id) {
                 abort(401, 'You can only update your own task');
             }

@@ -3,15 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LoginRequest;
-use App\Mail\WelcomeUserEmail;
 use App\Models\User;
-use App\Notifications\WelcomeUserNotification;
 use Auth;
-use DB;
 use Hash;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Mail;
-use Validator;
 
 class AuthController extends Controller
 {
@@ -44,6 +39,8 @@ class AuthController extends Controller
             $user = User::where('email', $request->email)->first();
             return $this->createUserToken($user);
         }
+
+        abort(401, 'Login failed');
     }
 
     public function logout(Request $request)
