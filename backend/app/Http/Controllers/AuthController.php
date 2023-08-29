@@ -77,6 +77,11 @@ class AuthController extends Controller
         return $this->createUserToken($user);
     }
 
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+    }
+
     private function createUserToken(User $user)
     {
         $token = $user->createToken('token');

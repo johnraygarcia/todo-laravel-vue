@@ -30,9 +30,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/task', [TaskController::class, 'create']);
 
     Route::delete('/task', [TaskController::class, 'delete']);
+
+    Route::post('/auth/logout', [AuthController::class, 'logout']);
 });
 
 Route::post('/auth/register', [AuthController::class, 'createUser']);
 Route::post('/auth/login', [AuthController::class, 'login']);
-
-
