@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Todo;
+use App\Models\Task;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('filename');
             $table->string('url');
             $table->string('type');
-            $table->foreignIdFor(Todo::class);
+            $table->foreignIdFor(Task::class);
             $table->timestamps();
         });
     }

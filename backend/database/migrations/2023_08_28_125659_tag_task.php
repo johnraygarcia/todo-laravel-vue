@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-
-        Schema::create('tag_todo', function (Blueprint $table) {
+        Schema::create('tag_task', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('tag_id');
-            $table->unsignedBigInteger('todo_id');
+            $table->unsignedBigInteger('task_id');
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::drop('tag_todo');
+        Schema::drop('tag_task');
     }
 };

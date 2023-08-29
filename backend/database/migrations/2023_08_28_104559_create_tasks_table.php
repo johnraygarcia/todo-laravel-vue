@@ -12,18 +12,19 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('todos', function (Blueprint $table) {
+        Schema::create('tasks', function (Blueprint $table) {
             $table->id();
             $table->string('title')->nullable(false);
             $table->string('description');
             $table->foreignIdFor(User::class);
-            $table->dateTime('created_date');
-            $table->dateTime('due_date');
+            $table->timestampTz('due_date');
             $table->boolean('status');
             $table->smallInteger('priority');
             $table->boolean('is_archived');
             $table->smallInteger('order');
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
@@ -32,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('todos');
+        Schema::dropIfExists('tasks');
     }
 };
