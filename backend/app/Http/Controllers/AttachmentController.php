@@ -29,7 +29,7 @@ class AttachmentController extends Controller
         $filename = preg_replace('/[^a-zA-Z0-9_-]+/', '-', strtolower($oFilename)).'-'.time().'.'.$oExtension;
 
         // upload the file
-        $filePath = $uploadedFile->storeAs('uploads', $filename, 'public');
+        $uploadedFile->storeAs('uploads', $filename, 'public');
 
         $attachment = Attachment::factory()->create([
             'filename' => $filename,
