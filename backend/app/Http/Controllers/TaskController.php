@@ -15,6 +15,34 @@ class TaskController extends Controller
     {
     }
 
+    /**
+    * @OA\Post(
+    * path="/api/task",
+    * operationId="TaskCreate",
+    * tags={"Task"},
+    * summary="Create Task",
+    * description="Create Task",
+    *     @OA\RequestBody(
+    *         @OA\JsonContent(
+    *           ref="#/components/schemas/Task"
+    *         ),
+    *    ),
+    *    @OA\Response(
+    *          response=200,
+    *          description="Register Successfully",
+    *          @OA\JsonContent(
+    *           ref="#/components/schemas/Task"
+    *          ),
+    *       ),
+    *    @OA\Response(
+    *          response=422,
+    *          description="Unprocessable Entity",
+    *          @OA\JsonContent(
+    *               ref="#/components/schemas/ValidationErrorResponseJson"
+    *          ),
+    *     ),
+    * )
+    **/
     public function create()
     {
         return Response::json([
@@ -22,6 +50,40 @@ class TaskController extends Controller
         ], 201);
     }
 
+    /**
+    * @OA\Put(
+    * path="/api/task/{id}",
+    * operationId="UpdateTask",
+    * tags={"Task"},
+    * summary="Update Task",
+    * description="Update Task",
+    *     @OA\Parameter(
+    *         name="id",
+    *         description="Id of the task",
+    *         in="path",
+    *         required=true
+    *     ),
+    *     @OA\RequestBody(
+    *         @OA\JsonContent(
+    *           ref="#/components/schemas/Task"
+    *         ),
+    *    ),
+    *    @OA\Response(
+    *          response=200,
+    *          description="Register Successfully",
+    *          @OA\JsonContent(
+    *               ref="#/components/schemas/Task"
+    *          ),
+    *    ),
+    *    @OA\Response(
+    *          response=422,
+    *          description="Unprocessable Entity",
+    *          @OA\JsonContent(
+    *               ref="#/components/schemas/ValidationErrorResponseJson"
+    *          ),
+    *     ),
+    * )
+    **/
     public function update($id)
     {
         $data = $this->request->all();
@@ -52,6 +114,40 @@ class TaskController extends Controller
         return Response::json(['data' => $task], 200);
     }
 
+    /**
+    * @OA\Delete(
+    * path="/api/task/{id}",
+    * operationId="DeleteTask",
+    * tags={"Task"},
+    * summary="Delete Task",
+    * description="Delete Task",
+    *     @OA\Parameter(
+    *         name="id",
+    *         description="Id of the task",
+    *         in="path",
+    *         required=true
+    *     ),
+    *    @OA\RequestBody(
+    *         @OA\JsonContent(
+    *           ref="#/components/schemas/Task"
+    *         ),
+    *    ),
+    *    @OA\Response(
+    *          response=200,
+    *          description="Register Successfully",
+    *          @OA\JsonContent(
+    *               ref="#/components/schemas/Task"
+    *          ),
+    *    ),
+    *    @OA\Response(
+    *          response=422,
+    *          description="Unprocessable Entity",
+    *          @OA\JsonContent(
+    *               ref="#/components/schemas/ValidationErrorResponseJson"
+    *          ),
+    *     ),
+    * )
+    **/
     public function delete($id)
     {
         $task = Task::findOrFail($id);
@@ -60,6 +156,27 @@ class TaskController extends Controller
         return Response::json(['message' => 'task deleted'], 202);
     }
 
+    /**
+    * @OA\Get(
+    * path="/api/task",
+    * operationId="GetAllUserTask",
+    * tags={"Task"},
+    * summary="Get all task",
+    * description="Get all task task of the authenticated user",
+    *    @OA\Response(
+    *          response=200,
+    *          description="Register Successfully",
+    *          @OA\JsonContent(
+    *               @OA\Property(
+    *                   property="data",
+    *                   type="array",
+    *                   description="List of task",
+    *               ),
+    *               ref="#/components/schemas/Task"
+    *          ),
+    *    ),
+    * )
+    **/
     public function getAll()
     {
         $tasks = Task::where('user_id', Auth::user()->id)

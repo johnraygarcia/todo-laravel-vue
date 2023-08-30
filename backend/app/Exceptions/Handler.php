@@ -5,6 +5,40 @@ namespace App\Exceptions;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 
+/**
+ * @OA\Schema(
+ *    schema="ValidationErrorResponseJson",
+ *        @OA\Property(
+ *            property="message",
+ *            description="Error message",
+ *            type="string",
+ *            nullable="false",
+ *            example="The status field is required. (and 1 more error)"
+ *        ),
+ *        @OA\Property(
+ *            property="errors",
+ *            description="Error object",
+ *            type="object",
+ *            nullable="true",
+ *            @OA\Property(
+ *               property="status",
+ *               type="array",
+ *               nullable=false,
+ *               example="['The status field is required.']",
+ *               @OA\Items(type="string")
+ *           ),
+ *            @OA\Property(
+ *               property="priority",
+ *               type="array",
+ *               nullable=false,
+ *               example="['The priority field is required.']",
+ *               @OA\Items(type="string")
+ *           ),
+ *        ),
+ *    )
+ * )
+ *
+ **/
 class Handler extends ExceptionHandler
 {
     /**

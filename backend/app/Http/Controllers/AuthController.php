@@ -43,7 +43,7 @@ class AuthController extends Controller
     *              )
     *         ),
     *    ),
-    *      @OA\Response(
+    *    @OA\Response(
     *          response=200,
     *          description="Register Successfully",
     *          @OA\JsonContent(
@@ -76,8 +76,7 @@ class AuthController extends Controller
     *          description="Unprocessable Entity",
     *          @OA\JsonContent()
     *       ),
-    *      @OA\Response(response=400, description="Bad request"),
-    *      @OA\Response(response=404, description="Resource Not Found"),
+    *      @OA\Response(response=401, description="Login failed"),
     * )
     **/
     public function createUser(LoginRequest $request)

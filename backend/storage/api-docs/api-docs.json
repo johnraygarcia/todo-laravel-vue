@@ -1,7 +1,7 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "My First API",
+        "title": "TodoMaster API",
         "version": "0.1"
     },
     "paths": {
@@ -81,11 +81,145 @@
                             }
                         }
                     },
-                    "400": {
-                        "description": "Bad request"
+                    "401": {
+                        "description": "Login failed"
+                    }
+                }
+            }
+        },
+        "/api/task": {
+            "post": {
+                "tags": [
+                    "Task"
+                ],
+                "summary": "Create Task",
+                "description": "Create Task",
+                "operationId": "TaskCreate",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Task"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Register Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Task"
+                                }
+                            }
+                        }
                     },
-                    "404": {
-                        "description": "Resource Not Found"
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponseJson"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/task/{id}": {
+            "put": {
+                "tags": [
+                    "Task"
+                ],
+                "summary": "Update Task",
+                "description": "Update Task",
+                "operationId": "UpdateTask",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of the task",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Task"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Register Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Task"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponseJson"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Task"
+                ],
+                "summary": "Delete Task",
+                "description": "Delete Task",
+                "operationId": "DeleteTask",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of the task",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/Task"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Register Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Task"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ValidationErrorResponseJson"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -93,6 +227,93 @@
     },
     "components": {
         "schemas": {
+            "ValidationErrorResponseJson": {
+                "properties": {
+                    "message": {
+                        "description": "Error message",
+                        "type": "string",
+                        "example": "The status field is required. (and 1 more error)",
+                        "nullable": "false"
+                    },
+                    "errors": {
+                        "description": "Error object",
+                        "properties": {
+                            "status": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "example": "['The status field is required.']",
+                                "nullable": false
+                            },
+                            "priority": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                },
+                                "example": "['The priority field is required.']",
+                                "nullable": false
+                            }
+                        },
+                        "type": "object",
+                        "nullable": "true"
+                    }
+                },
+                "type": "object"
+            },
+            "Task": {
+                "properties": {
+                    "id": {
+                        "description": "Task identifier",
+                        "type": "integer",
+                        "example": "1",
+                        "nullable": "false"
+                    },
+                    "title": {
+                        "description": "Title of the task",
+                        "type": "string",
+                        "example": "Create Swagger Documentation",
+                        "nullable": "false"
+                    },
+                    "description": {
+                        "description": "Destription of the Task",
+                        "type": "string",
+                        "example": "Lorem ipsum dolor",
+                        "nullable": "true"
+                    },
+                    "due_date": {
+                        "description": "Due date of the Task with timezone",
+                        "type": "string",
+                        "example": "2004-10-19 16:23:54.000 +0800",
+                        "nullable": "true"
+                    },
+                    "status": {
+                        "description": "Status of the Task if it is completed",
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": "true"
+                    },
+                    "priority": {
+                        "description": "Priority of the Task",
+                        "type": "integer",
+                        "example": "1",
+                        "nullable": "true"
+                    },
+                    "is_archived": {
+                        "description": "Flag to archive a task",
+                        "type": "boolean",
+                        "example": true,
+                        "nullable": "true"
+                    },
+                    "order": {
+                        "description": "Sort order of a task",
+                        "type": "integer",
+                        "example": 1,
+                        "nullable": "true"
+                    }
+                },
+                "type": "object"
+            },
             "User": {
                 "properties": {
                     "id": {

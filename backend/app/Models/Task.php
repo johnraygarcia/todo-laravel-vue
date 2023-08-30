@@ -10,6 +10,68 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 
+/**
+ * @OA\Schema(
+ *    schema="Task",
+ *        @OA\Property(
+ *            property="id",
+ *            description="Task identifier",
+ *            type="integer",
+ *            nullable="false",
+ *            example="1"
+ *        ),
+ *        @OA\Property(
+ *            property="title",
+ *            description="Title of the task",
+ *            type="string",
+ *            nullable="false",
+ *            example="Create Swagger Documentation"
+ *        ),
+ *        @OA\Property(
+ *            property="description",
+ *            description="Destription of the Task",
+ *            type="string",
+ *            nullable="true",
+ *            example="Lorem ipsum dolor"
+ *        ),
+ *        @OA\Property(
+ *            property="due_date",
+ *            description="Due date of the Task with timezone",
+ *            type="string",
+ *            nullable="true",
+ *            example="2004-10-19 16:23:54.000 +0800"
+ *        ),
+ *        @OA\Property(
+ *            property="status",
+ *            description="Status of the Task if it is completed",
+ *            type="integer",
+ *            nullable="true",
+ *            example=1
+ *        ),
+ *        @OA\Property(
+ *            property="priority",
+ *            description="Priority of the Task",
+ *            type="integer",
+ *            nullable="true",
+ *            example="1"
+ *        ),
+ *        @OA\Property(
+ *            property="is_archived",
+ *            description="Flag to archive a task",
+ *            type="boolean",
+ *            nullable="true",
+ *            example=true
+ *        ),
+ *        @OA\Property(
+ *            property="order",
+ *            description="Sort order of a task",
+ *            type="integer",
+ *            nullable="true",
+ *            example=1
+ *        ),
+ *    )
+ * )
+ */
 class Task extends Model
 {
     use HasFactory;
