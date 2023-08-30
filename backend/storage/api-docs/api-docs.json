@@ -1,0 +1,121 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "My First API",
+        "version": "0.1"
+    },
+    "paths": {
+        "/api/register": {
+            "post": {
+                "tags": [
+                    "Register"
+                ],
+                "summary": "User Register",
+                "description": "User Register here",
+                "operationId": "Register",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "description": "User's name",
+                                        "type": "text",
+                                        "example": "John Doe",
+                                        "nullable": "false"
+                                    },
+                                    "email": {
+                                        "description": "User's email",
+                                        "type": "text",
+                                        "example": "john.doe@todo.com",
+                                        "nullable": "false"
+                                    },
+                                    "password_confirm": {
+                                        "description": "Confirm password",
+                                        "type": "text",
+                                        "example": "john.doe@todo.com",
+                                        "nullable": "false"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Register Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "description": "An error message",
+                                            "type": "boolean",
+                                            "example": "true",
+                                            "nullable": "true"
+                                        },
+                                        "message": {
+                                            "description": "Message result when registerting a user",
+                                            "type": "string",
+                                            "example": "User Created Successfully",
+                                            "nullable": "true"
+                                        },
+                                        "token": {
+                                            "description": "Access token for the newly registered user",
+                                            "type": "string",
+                                            "example": "4|laravel_sanctum_xabYxNyN6P77sTNv7cIW43eWZSBFxOKfYbnTHg9R0e5d5563",
+                                            "nullable": "true"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {
+                                "schema": {}
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "404": {
+                        "description": "Resource Not Found"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "User": {
+                "properties": {
+                    "id": {
+                        "description": "User identifier",
+                        "type": "integer",
+                        "example": "1",
+                        "nullable": "false"
+                    },
+                    "name": {
+                        "description": "User name",
+                        "type": "string",
+                        "example": "John Doe",
+                        "nullable": "false"
+                    },
+                    "email": {
+                        "description": "User E-mail",
+                        "type": "string",
+                        "example": "john.doe@todo.com",
+                        "nullable": "false"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    }
+}

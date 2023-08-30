@@ -8,7 +8,33 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-
+/**
+ * @OA\Schema(
+ *    schema="User",
+ *        @OA\Property(
+ *            property="id",
+ *            description="User identifier",
+ *            type="integer",
+ *            nullable="false",
+ *            example="1"
+ *        ),
+ *        @OA\Property(
+ *            property="name",
+ *            description="User name",
+ *            type="string",
+ *            nullable="false",
+ *            example="John Doe"
+ *        ),
+ *        @OA\Property(
+ *            property="email",
+ *            description="User E-mail",
+ *            type="string",
+ *            nullable="false",
+ *            example="john.doe@todo.com"
+ *        ),
+ *    )
+ * )
+ */
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;

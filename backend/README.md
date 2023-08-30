@@ -4,4 +4,8 @@
 3. Go to the root directory of the project and run `docker compose up --build`
 4. Run `docker-compose exec -t app php artisan migrate:fresh` to initialize the database
 
+## Generate the swagger API
+- Run the following command in terminal `php artisan l5-swagger:generate`
+- Go to `http://localhost/api/documentation#`
+
 

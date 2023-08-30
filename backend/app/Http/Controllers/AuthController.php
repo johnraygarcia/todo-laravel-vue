@@ -12,10 +12,74 @@ class AuthController extends Controller
 {
 
     /**
-     * Create User
-     * @param Request $request
-     * @return User
-     */
+    * @OA\Post(
+    * path="/api/register",
+    * operationId="Register",
+    * tags={"Register"},
+    * summary="User Register",
+    * description="User Register here",
+    *     @OA\RequestBody(
+    *         @OA\JsonContent(
+    *              @OA\Property(
+    *                  property="name",
+    *                  description="User's name",
+    *                  type="text",
+    *                  nullable="false",
+    *                  example="John Doe"
+    *              ),
+    *              @OA\Property(
+    *                  property="email",
+    *                  description="User's email",
+    *                  type="text",
+    *                  nullable="false",
+    *                  example="john.doe@todo.com"
+    *              ),
+    *              @OA\Property(
+    *                  property="password_confirm",
+    *                  description="Confirm password",
+    *                  type="text",
+    *                  nullable="false",
+    *                  example="john.doe@todo.com"
+    *              )
+    *         ),
+    *    ),
+    *      @OA\Response(
+    *          response=200,
+    *          description="Register Successfully",
+    *          @OA\JsonContent(
+    *               @OA\Property(
+    *                   property="status",
+    *                   description="An error message",
+    *                   type="boolean",
+    *                   nullable="true",
+    *                   example="true"
+    *               ),
+    *               @OA\Property(
+    *                   property="message",
+    *                   description="Message result when registerting a user",
+    *                   type="string",
+    *                   nullable="true",
+    *                   example="User Created Successfully"
+    *               ),
+    *               @OA\Property(
+    *                   property="token",
+    *                   description="Access token for the newly registered user",
+    *                   type="string",
+    *                   nullable="true",
+    *                   example="4|laravel_sanctum_xabYxNyN6P77sTNv7cIW43eWZSBFxOKfYbnTHg9R0e5d5563"
+    *               ),
+    *          ),
+    *
+    *       ),
+    *      @OA\Response(
+    *          response=422,
+    *          description="Unprocessable Entity",
+    *          @OA\JsonContent()
+    *       ),
+    *      @OA\Response(response=400, description="Bad request"),
+    *      @OA\Response(response=404, description="Resource Not Found"),
+    * )
+    **/
     public function createUser(LoginRequest $request)
     {
         $user = User::create([
@@ -29,7 +93,6 @@ class AuthController extends Controller
             'message' => 'User Created Successfully',
             'token' => $user->createToken("API TOKEN")->plainTextToken
         ], 200);
-
     }
 
     public function login(LoginRequest $request)
