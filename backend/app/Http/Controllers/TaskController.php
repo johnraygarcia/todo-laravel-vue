@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreTaskRequest;
 use App\Models\Task;
 use Auth;
+use Illuminate\Support\Facades\DB;
 use Response;
 
 class TaskController extends Controller
@@ -161,6 +162,13 @@ class TaskController extends Controller
     * description="Get all task task of the authenticated user",
     * security={{"sanctum":{}}},
     *     @OA\Parameter(
+    *         name="searchKey",
+    *         description="Search key for the title field",
+    *         in="query",
+    *         required=false,
+    *         example="My todo title"
+    *     ),
+    *     @OA\Parameter(
     *         name="page",
     *         description="selects the number of page in the paginated data",
     *         in="query",
@@ -219,9 +227,16 @@ class TaskController extends Controller
     **/
     public function getAll()
     {
-        $tasks = Task::where('user_id', Auth::user()->id)
+        $searchKey = $this->request->query('searchKey') ?? null;
+
+        $tasks = DB::table('tasks as t')
+            ->where('t.user_id', '=', Auth::user()->id)
+            ->when($searchKey, function($query, $searchKey){
+                return $query->where("t.title", "ilike", "%{$searchKey}%");
+            })
             ->orderBy($this->sanitizedSortBy(), $this->sanitizedSortOrder())
             ->paginate(self::ITEMS_PER_PAGE);
+
         return Response::json($tasks, 200);
     }
 

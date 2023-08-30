@@ -208,6 +208,13 @@
                 "operationId": "GetAllUserTask",
                 "parameters": [
                     {
+                        "name": "searchKey",
+                        "in": "query",
+                        "description": "Search key for the title field",
+                        "required": false,
+                        "example": "My todo title"
+                    },
+                    {
                         "name": "page",
                         "in": "query",
                         "description": "selects the number of page in the paginated data",
