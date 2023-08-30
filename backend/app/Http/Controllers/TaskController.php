@@ -22,6 +22,7 @@ class TaskController extends Controller
     * tags={"Task"},
     * summary="Create Task",
     * description="Create Task",
+    * security={{"sanctum":{}}},
     *     @OA\RequestBody(
     *         @OA\JsonContent(
     *           ref="#/components/schemas/Task"
@@ -57,6 +58,7 @@ class TaskController extends Controller
     * tags={"Task"},
     * summary="Update Task",
     * description="Update Task",
+    * security={{"sanctum":{}}},
     *     @OA\Parameter(
     *         name="id",
     *         description="Id of the task",
@@ -76,12 +78,16 @@ class TaskController extends Controller
     *          ),
     *    ),
     *    @OA\Response(
+    *          response=401,
+    *          description="You can only update your own task",
+    *    ),
+    *    @OA\Response(
     *          response=422,
     *          description="Unprocessable Entity",
     *          @OA\JsonContent(
     *               ref="#/components/schemas/ValidationErrorResponseJson"
     *          ),
-    *     ),
+    *    ),
     * )
     **/
     public function update($id)
@@ -90,7 +96,7 @@ class TaskController extends Controller
 
         // check if task exists
         $task = Task::findOrFail($id);
-        $this->checkUserIsOwner($task);
+        $this->checkUserIsOwner($task, 'You can only update your own task');
 
         Task::where('id', $id)->update([
             'title' => $data['title'],
@@ -109,7 +115,7 @@ class TaskController extends Controller
     {
         // check if task exists
         $task = Task::findOrFail($id);
-        $this->checkUserIsOwner($task);
+        $this->checkUserIsOwner($task, 'You can only view your own task');
 
         return Response::json(['data' => $task], 200);
     }
@@ -121,37 +127,27 @@ class TaskController extends Controller
     * tags={"Task"},
     * summary="Delete Task",
     * description="Delete Task",
+    * security={{"sanctum":{}}},
     *     @OA\Parameter(
     *         name="id",
     *         description="Id of the task",
     *         in="path",
     *         required=true
     *     ),
-    *    @OA\RequestBody(
-    *         @OA\JsonContent(
-    *           ref="#/components/schemas/Task"
-    *         ),
-    *    ),
     *    @OA\Response(
     *          response=200,
     *          description="Register Successfully",
-    *          @OA\JsonContent(
-    *               ref="#/components/schemas/Task"
-    *          ),
     *    ),
     *    @OA\Response(
-    *          response=422,
-    *          description="Unprocessable Entity",
-    *          @OA\JsonContent(
-    *               ref="#/components/schemas/ValidationErrorResponseJson"
-    *          ),
+    *          response=401,
+    *          description="You can only delete your own task",
     *     ),
     * )
     **/
     public function delete($id)
     {
         $task = Task::findOrFail($id);
-        $this->checkUserIsOwner($task);
+        $this->checkUserIsOwner($task, 'You can only delete your own task');
         $task->delete();
         return Response::json(['message' => 'task deleted'], 202);
     }
@@ -163,16 +159,60 @@ class TaskController extends Controller
     * tags={"Task"},
     * summary="Get all task",
     * description="Get all task task of the authenticated user",
+    * security={{"sanctum":{}}},
+    *     @OA\Parameter(
+    *         name="page",
+    *         description="selects the number of page in the paginated data",
+    *         in="query",
+    *         required=false,
+    *         example="1"
+    *     ),
+    *     @OA\Parameter(
+    *         name="sortBy",
+    *         description="field name of what to sort",
+    *         in="query",
+    *         required=false,
+    *         example="priority",
+    *     ),
+    *     @OA\Parameter(
+    *         name="sortOrder",
+    *         description="Sort order, either 'asc' or 'desc'",
+    *         in="query",
+    *         required=false,
+    *         example="asc",
+    *     ),
     *    @OA\Response(
     *          response=200,
-    *          description="Register Successfully",
+    *          description="List of task",
     *          @OA\JsonContent(
     *               @OA\Property(
     *                   property="data",
     *                   type="array",
     *                   description="List of task",
+    *                   @OA\Items(
+    *                       ref="#/components/schemas/Task"
+    *                   )
     *               ),
-    *               ref="#/components/schemas/Task"
+    *               @OA\Property(
+    *                   property="current_page",
+    *                   type="string",
+    *                   description="The current page",
+    *               ),
+    *               @OA\Property(
+    *                   property="next_page_url",
+    *                   type="string",
+    *                   description="The url link for the next page",
+    *               ),
+    *               @OA\Property(
+    *                   property="per_page",
+    *                   type="integer",
+    *                   description="The items per page",
+    *               ),
+    *               @OA\Property(
+    *                   property="total",
+    *                   type="integer",
+    *                   description="The number of total items",
+    *               ),
     *          ),
     *    ),
     * )
@@ -182,9 +222,7 @@ class TaskController extends Controller
         $tasks = Task::where('user_id', Auth::user()->id)
             ->orderBy($this->sanitizedSortBy(), $this->sanitizedSortOrder())
             ->paginate(self::ITEMS_PER_PAGE);
-        return Response::json([
-            'data' => $tasks
-        ], 200);
+        return Response::json($tasks, 200);
     }
 
     private function sanitizedSortBy(): string
@@ -209,12 +247,12 @@ class TaskController extends Controller
         return 'asc';
     }
 
-    private function checkUserIsOwner(Task $task): void
+    private function checkUserIsOwner(Task $task, $errorMessage): void
     {
         // check if user is not the creator of task
         if ($task->user()->first()->id !== Auth::user()->id){
             // throw 401 exception error
-            abort(401, 'You can only update your own task');
+            abort(401, $errorMessage);
         }
     }
 }

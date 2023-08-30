@@ -15,7 +15,7 @@ class AuthController extends Controller
     * @OA\Post(
     * path="/api/register",
     * operationId="Register",
-    * tags={"Register"},
+    * tags={"Authentication"},
     * summary="User Register",
     * description="User Register here",
     *     @OA\RequestBody(
@@ -94,6 +94,48 @@ class AuthController extends Controller
         ], 200);
     }
 
+    /**
+    * @OA\Post(
+    * path="/api/auth/login",
+    * operationId="Login",
+    * tags={"Authentication"},
+    * summary="User Login",
+    * description="User login",
+    *     @OA\RequestBody(
+    *         @OA\JsonContent(
+    *              @OA\Property(
+    *                  property="email",
+    *                  description="User's email",
+    *                  type="text",
+    *                  nullable="false",
+    *                  example="john.doe@todo.com"
+    *              ),
+    *              @OA\Property(
+    *                  property="password",
+    *                  description="password",
+    *                  type="text",
+    *                  nullable="false",
+    *                  example="@veryHardPW!^"
+    *              )
+    *         ),
+    *    ),
+    *    @OA\Response(
+    *          response=200,
+    *          description="Login success",
+    *          @OA\JsonContent(
+    *               @OA\Property(
+    *                   property="token",
+    *                   description="Access token for the newly registered user",
+    *                   type="string",
+    *                   nullable="true",
+    *                   example="4|laravel_sanctum_xabYxNyN6P77sTNv7cIW43eWZSBFxOKfYbnTHg9R0e5d5563"
+    *               ),
+    *          ),
+    *
+    *       ),
+    *      @OA\Response(response=401, description="Login failed"),
+    * )
+    **/
     public function login(LoginRequest $request)
     {
         $check = Auth::guard()->attempt(['email' => $request->email, 'password' => $request->password]);

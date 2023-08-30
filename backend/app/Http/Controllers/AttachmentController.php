@@ -15,6 +15,40 @@ class AttachmentController extends Controller
 
     }
 
+    /**
+    * @OA\Post(
+    * path="/api/task/{id}/attachment",
+    * operationId="AttachFile",
+    * tags={"AttachFileToTask"},
+    * summary="Attach file to task",
+    * description="Attach file to task",
+    * security={{"sanctum":{}}},
+    *     @OA\Parameter(
+    *         name="id",
+    *         description="Id of the task",
+    *         in="path",
+    *         required=true
+    *     ),
+    *     @OA\RequestBody(
+    *           required=true,
+    *           description="Attachment",
+    *           @OA\MediaType(
+    *               mediaType="multipart/form-data",
+        *           @OA\Schema(
+        *               @OA\Property(property="file", type="string", format="binary"),
+        *               required={"file"}
+        *           ),
+    *           ),
+    *    ),
+    *    @OA\Response(
+    *          response=200,
+    *          description="Register Successfully",
+    *          @OA\JsonContent(
+    *           ref="#/components/schemas/Attachment"
+    *          ),
+    *       ),
+    * )
+    **/
     public function upload($id)
     {
         $this->request->validate([

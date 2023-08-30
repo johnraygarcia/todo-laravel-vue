@@ -5,10 +5,65 @@
         "version": "0.1"
     },
     "paths": {
+        "/api/task/{id}/attachment": {
+            "post": {
+                "tags": [
+                    "AttachFileToTask"
+                ],
+                "summary": "Attach file to task",
+                "description": "Attach file to task",
+                "operationId": "AttachFile",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of the task",
+                        "required": true
+                    }
+                ],
+                "requestBody": {
+                    "description": "Attachment",
+                    "required": true,
+                    "content": {
+                        "multipart/form-data": {
+                            "schema": {
+                                "required": [
+                                    "file"
+                                ],
+                                "properties": {
+                                    "file": {
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Register Successfully",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Attachment"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
+        },
         "/api/register": {
             "post": {
                 "tags": [
-                    "Register"
+                    "Authentication"
                 ],
                 "summary": "User Register",
                 "description": "User Register here",
@@ -87,7 +142,136 @@
                 }
             }
         },
+        "/api/auth/login": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "User Login",
+                "description": "User login",
+                "operationId": "Login",
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "email": {
+                                        "description": "User's email",
+                                        "type": "text",
+                                        "example": "john.doe@todo.com",
+                                        "nullable": "false"
+                                    },
+                                    "password": {
+                                        "description": "password",
+                                        "type": "text",
+                                        "example": "@veryHardPW!^",
+                                        "nullable": "false"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Login success",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "token": {
+                                            "description": "Access token for the newly registered user",
+                                            "type": "string",
+                                            "example": "4|laravel_sanctum_xabYxNyN6P77sTNv7cIW43eWZSBFxOKfYbnTHg9R0e5d5563",
+                                            "nullable": "true"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Login failed"
+                    }
+                }
+            }
+        },
         "/api/task": {
+            "get": {
+                "tags": [
+                    "Task"
+                ],
+                "summary": "Get all task",
+                "description": "Get all task task of the authenticated user",
+                "operationId": "GetAllUserTask",
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "selects the number of page in the paginated data",
+                        "required": false,
+                        "example": "1"
+                    },
+                    {
+                        "name": "sortBy",
+                        "in": "query",
+                        "description": "field name of what to sort",
+                        "required": false,
+                        "example": "priority"
+                    },
+                    {
+                        "name": "sortOrder",
+                        "in": "query",
+                        "description": "Sort order, either 'asc' or 'desc'",
+                        "required": false,
+                        "example": "asc"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of task",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "description": "List of task",
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Task"
+                                            }
+                                        },
+                                        "current_page": {
+                                            "description": "The current page",
+                                            "type": "string"
+                                        },
+                                        "next_page_url": {
+                                            "description": "The url link for the next page",
+                                            "type": "string"
+                                        },
+                                        "per_page": {
+                                            "description": "The items per page",
+                                            "type": "integer"
+                                        },
+                                        "total": {
+                                            "description": "The number of total items",
+                                            "type": "integer"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            },
             "post": {
                 "tags": [
                     "Task"
@@ -125,7 +309,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         },
         "/api/task/{id}": {
@@ -164,6 +353,9 @@
                             }
                         }
                     },
+                    "401": {
+                        "description": "You can only update your own task"
+                    },
                     "422": {
                         "description": "Unprocessable Entity",
                         "content": {
@@ -174,7 +366,12 @@
                             }
                         }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             },
             "delete": {
                 "tags": [
@@ -191,37 +388,19 @@
                         "required": true
                     }
                 ],
-                "requestBody": {
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Task"
-                            }
-                        }
-                    }
-                },
                 "responses": {
                     "200": {
-                        "description": "Register Successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Task"
-                                }
-                            }
-                        }
+                        "description": "Register Successfully"
                     },
-                    "422": {
-                        "description": "Unprocessable Entity",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ValidationErrorResponseJson"
-                                }
-                            }
-                        }
+                    "401": {
+                        "description": "You can only delete your own task"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
             }
         }
     },
@@ -257,6 +436,29 @@
                         },
                         "type": "object",
                         "nullable": "true"
+                    }
+                },
+                "type": "object"
+            },
+            "Attachment": {
+                "properties": {
+                    "id": {
+                        "description": "Attachment identifier",
+                        "type": "integer",
+                        "example": "1",
+                        "nullable": "false"
+                    },
+                    "filename": {
+                        "description": "Attachments filename",
+                        "type": "string",
+                        "example": "test-attachment.docx",
+                        "nullable": "true"
+                    },
+                    "type": {
+                        "description": "file type extension of the attachment",
+                        "type": "string",
+                        "example": "john.doe@todo.com",
+                        "nullable": "false"
                     }
                 },
                 "type": "object"
@@ -336,6 +538,14 @@
                     }
                 },
                 "type": "object"
+            }
+        },
+        "securitySchemes": {
+            "sanctum": {
+                "type": "apiKey",
+                "description": "Enter token in format (Bearer <token>)",
+                "name": "Authorization",
+                "in": "header"
             }
         }
     }
