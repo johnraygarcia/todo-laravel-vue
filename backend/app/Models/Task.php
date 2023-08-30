@@ -36,5 +36,10 @@ class Task extends Model
         return $this->sortFields;
     }
 
+    public function attachments(): HasMany
+    {
+        return $this->hasMany(Attachment::class);
+    }
+
 
 }

@@ -15,7 +15,6 @@ return new class extends Migration
         Schema::create('attachments', function (Blueprint $table) {
             $table->id();
             $table->string('filename');
-            $table->string('url');
             $table->string('type');
             $table->foreignIdFor(Task::class);
             $table->timestamps();

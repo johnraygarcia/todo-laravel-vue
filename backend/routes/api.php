@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
@@ -25,9 +26,16 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('/task', [TaskController::class, 'create']);
 
+    Route::post('/task/{id}/attachment', [AttachmentController::class, 'upload']);
+    Route::get('/task/{id}/attachment', [AttachmentController::class, 'getAttachmentsByTask']);
+    Route::delete('/task/{id}/attachment/{attachmentId}', [AttachmentController::class, 'delete']);
+
     Route::delete('/task', [TaskController::class, 'delete']);
 
     Route::post('/auth/logout', [AuthController::class, 'logout']);
+
+
+
 });
 
 Route::post('/auth/register', [AuthController::class, 'createUser']);
