@@ -23,11 +23,12 @@ class LoginRequest extends FormRequest
     {
         $rules = [
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:7|max:255'
+            'password' => 'required|min:7|max:255|confirmed'
         ];
 
         if (strpos(request()->path(), 'login') !== false) {
             $rules['email'] = 'required|email';
+            $rules['password'] = 'required|min:7|max:255';
         }
 
         return $rules;

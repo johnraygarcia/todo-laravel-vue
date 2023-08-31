@@ -8,12 +8,20 @@ import axios from 'axios'
 
 loadFonts()
 const pinia = createPinia();
-axios.defaults.baseURL = 'http://localhost:80'
-axios.interceptors.request.use(config => {
+
+// Set config defaults when creating the instance
+const instance = axios.create({
+  baseURL: 'http://localhost:80',
+  withCredentials: true,
+});
+
+instance.interceptors.request.use(config => {
   const token = localStorage.getItem("access_token");
   config.headers["Authorization"] = `Bearer ${token}`;
   return config;
 });
+
+window.axios=instance
 
 createApp(App)
   .use(router)

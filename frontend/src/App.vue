@@ -52,6 +52,7 @@
             block
             color="primary"
             v-if="!rail"
+            @click="logout"
           >Logout</v-btn>
         </div>
       </template>
@@ -66,11 +67,15 @@
 <script setup>
 import { useRoute } from 'vue-router'
 import { ref } from 'vue'
+import axios from 'axios';
+
+
 
 const route = useRoute()
 </script>
 
 <script>
+
 export default {
   data: () => ({
     drawer: true,
@@ -97,5 +102,14 @@ export default {
         },
       ],
   }),
+  methods: {
+    logout() {
+      window.axios.get('http://localhost:80/sanctum/csrf-cookie').then(response => {
+          instance.post('/api/auth/logout').then(response => {
+          this.$router.push({name: 'login'});
+        });
+      })
+    }
+  }
 }
 </script>

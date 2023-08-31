@@ -2,8 +2,8 @@
   <v-container fluid class="fill-height login bg-primary">
      <v-row>
         <v-col class="d-flex justify-center">
-          <v-card 
-            class="mx-auto px-6 py-8" 
+          <v-card
+            class="mx-auto px-6 py-8"
             min-width="344"
           >
           <v-img
@@ -11,18 +11,18 @@
               class="mb-2"
               contain
             />
-            
+
             <v-form
               v-model="form"
               @submit.prevent="onSubmit"
             >
               <v-text-field
-                v-model="username"
+                v-model="name"
                 :readonly="loading"
                 :rules="[required]"
                 class="mb-2"
                 clearable
-                label="Username"
+                label="Name"
               ></v-text-field>
 
               <v-text-field
@@ -41,6 +41,17 @@
                 clearable
                 label="Password"
                 placeholder="Enter your password"
+                type="password"
+              ></v-text-field>
+
+              <v-text-field
+                v-model="password_confirmation"
+                :readonly="loading"
+                :rules="[required]"
+                clearable
+                label="Password Confirm"
+                placeholder="Confirm your password"
+                type="password"
               ></v-text-field>
 
               <br>
@@ -75,12 +86,14 @@
 </template>
 
 <script>
+
   export default {
     data: () => ({
       form: false,
       username: null,
       email: null,
       password: null,
+      password_confirmation: null,
       loading: false,
     }),
 
@@ -89,6 +102,17 @@
         if (!this.form) return
 
         this.loading = true
+        window.axios.get('/sanctum/csrf-cookie').then(response => {
+          window.axios.post('/api/auth/register', {
+            'name': this.name,
+            'email' : this.email,
+            'password' : this.password,
+            'password_confirmation': this.password_confirmation
+          }).then(data => {
+            localStorage.setItem('access_token', data.data.token)
+            this.$router.push({name: 'tasks'})
+          })
+        });
 
         setTimeout(() => (this.loading = false), 2000)
       },

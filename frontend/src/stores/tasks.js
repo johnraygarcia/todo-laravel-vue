@@ -1,4 +1,3 @@
-import axios from "axios";
 import { defineStore } from "pinia";
 
 export const useTasksStore = defineStore('tasks', {
@@ -12,7 +11,7 @@ export const useTasksStore = defineStore('tasks', {
     actions: {
         async getTasks(){
             this.isLoading = true;
-            await axios.get('/api/task').then(result => {
+            await window.axios.get('/api/task').then(result => {
                 this.tasks = result.data.data.map((task) => {
                     let prioLabel = 'low';
                     switch (task.priority) {
