@@ -90,6 +90,7 @@ import axios from 'axios'
             'email' : this.email,
             'password' : this.password
           }).then(data => {
+            localStorage.setItem('access_token', data.data.token)
             this.$router.push({name: 'tasks'})
           })
         })

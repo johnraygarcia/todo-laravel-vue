@@ -1,3 +1,15 @@
+<script setup>
+import { onMounted, ref } from 'vue'
+import { useTasksStore } from '../stores/tasks'
+
+const drawer = ref(null)
+const taskStore = useTasksStore();
+
+onMounted(() => {
+  taskStore.getTasks();
+})
+
+</script>
 <template v-slot:prepend>
   <v-container class="tasks pa-6">
     <v-row align="start" justify="center">
@@ -5,7 +17,7 @@
         <v-autocomplete
           auto-select-first
           clearable
-          :loading="isLoading"
+          :loading="taskStore.isLoading"
           :onUpdate:search="searchTasks"
           :onClick:clear="clearSearch"
           :items="tasks"
@@ -31,9 +43,9 @@
                 FILTERS
               </div>
 
-              <v-radio-group 
-                inline 
-                label="Completion Status" 
+              <v-radio-group
+                inline
+                label="Completion Status"
                 v-model="selectedCompletionStatus"
               >
                 <v-radio
@@ -45,9 +57,9 @@
                 />
               </v-radio-group>
 
-              <v-radio-group 
-                inline 
-                label="Archive Status" 
+              <v-radio-group
+                inline
+                label="Archive Status"
                 v-model="selectedArchiveStatus"
               >
                 <v-radio
@@ -59,7 +71,7 @@
                 />
               </v-radio-group>
 
-              <v-radio-group  
+              <v-radio-group
                 inline
                 label="Priorty"
                 v-model="selectedPriorityLevel"
@@ -72,12 +84,12 @@
                     @click="filterByPriority(value)"
                 />
               </v-radio-group>
-            
+
               <v-label class="mb-4 ml-4">Due Date (Date Range)</v-label>
-              <VueDatePicker 
+              <VueDatePicker
                 class="px-4"
                 :model-value="dates" @update:model-value="onChangeDateRange"
-                range 
+                range
                 clearable
                 placeholder="Select Due Dates"
                 ignore-time-validation
@@ -98,8 +110,8 @@
                 SORT
               </div>
 
-              <v-radio-group 
-                inline 
+              <v-radio-group
+                inline
                 label="Sort order"
                 v-model="selectedSortOrder"
               >
@@ -111,8 +123,8 @@
                     @click="sortTasks(value)"
                 />
               </v-radio-group>
-          
-              <v-radio-group 
+
+              <v-radio-group
                 inline
                 label="Sort by"
                 v-model="selectedSortBy"
@@ -134,10 +146,10 @@
         </div>
       </v-expand-transition>
     </v-card>
-   
+
     <v-row>
       <v-col
-        v-for="task in tasks"
+        v-for="task in taskStore.tasks"
         :key="task.id"
         cols="12"
         md="4"
@@ -147,26 +159,26 @@
           <v-card-item>
             <v-card-title>{{ task.title }}</v-card-title>
             <v-card-subtitle >
-              <v-chip 
+              <v-chip
                 :color="getPriorityDetails(task.priorityLevel.key).color"
                 :prepend-icon="getPriorityDetails(task.priorityLevel.key).icon"
-                size="x-small" 
+                size="x-small"
                 :text="getPriorityDetails(task.priorityLevel.key).text"
                 class="mr-2"
               ></v-chip>
-              <v-chip 
+              <v-chip
                 v-if="task.isCompleted"
                 color="success"
                 prepend-icon="mdi-check"
-                size="x-small" 
+                size="x-small"
                 text="DONE"
                 class="mr-2"
               ></v-chip>
-              <v-chip 
+              <v-chip
                 v-if="task.isArchived"
                 color="gray"
                 prepend-icon="mdi-archive"
-                size="x-small" 
+                size="x-small"
                 text="ARCHIVED"
                 class="mr-2"
               ></v-chip>
@@ -189,7 +201,7 @@
           <v-card-actions>
             <v-spacer></v-spacer>
 
-            <v-btn 
+            <v-btn
               size="small"
               variant="text"
               :icon="task.isCompleted ? 'mdi-undo' : 'mdi-check'"
@@ -198,7 +210,7 @@
               @click="toggleIsCompleted(task.id)"
             ></v-btn>
 
-            <v-btn 
+            <v-btn
               size="small"
               variant="text"
               :icon="task.isArchived ? 'mdi-undo' : 'mdi-archive'"
@@ -209,20 +221,20 @@
 
             <v-menu transition="scale-transition">
               <template v-slot:activator="{ props }">
-                <v-btn 
-                  icon="mdi-dots-vertical" 
+                <v-btn
+                  icon="mdi-dots-vertical"
                   v-bind="props"
                   :disabled="(task.isCompleted || task.isArchived)"
                 ></v-btn>
               </template>
 
               <v-list>
-                <v-list-item 
+                <v-list-item
                   prependIcon="mdi-pencil"
                   title="Edit"
                 ></v-list-item>
 
-                <v-list-item 
+                <v-list-item
                   :disabled="task.isCompleted || task.isArchived"
                   @click="onClickDelete(task)"
                   prependIcon="mdi-delete"
@@ -243,23 +255,23 @@
         width="1024"
       >
         <template v-slot:activator="{ props }">
-          <v-layout-item 
+          <v-layout-item
             model-value position="bottom"
-            class="text-end" 
-            size="88" 
+            class="text-end"
+            size="88"
           >
           <div class="ma-4">
-            <v-btn 
+            <v-btn
               v-bind="props"
-              icon="mdi-plus" 
-              size="large" 
+              icon="mdi-plus"
+              size="large"
               color="secondary"
               elevation="8"
             />
           </div>
         </v-layout-item>
         </template>
-        
+
         <v-card class="pa-4">
           <v-card-text>
             <v-card-title>
@@ -278,9 +290,9 @@
                     required
                   ></v-text-field>
 
-                  <v-textarea 
-                    clearable 
-                    label="Description*" 
+                  <v-textarea
+                    clearable
+                    label="Description*"
                     variant="outlined"
                     required
                   ></v-textarea>
@@ -292,7 +304,7 @@
                   sm="6"
                   md="6"
                 >
-                  <v-radio-group  
+                  <v-radio-group
                     inline
                     label="Priorty"
                   >
@@ -305,7 +317,7 @@
                     />
                   </v-radio-group>
 
-                  <VueDatePicker 
+                  <VueDatePicker
                     class="mb-6"
                     clearable
                     placeholder="Select Due Date"
@@ -388,16 +400,13 @@
  }
 </style>
 
-<script setup>
-import { ref } from 'vue'
-const drawer = ref(null)
-</script>
+
 
 <script>
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 
-var dummyTasks = [
+/*var dummyTasks = [
   {
     id: 1,
     title: "MERN Review",
@@ -512,7 +521,7 @@ var dummyTasks = [
     isArchived: false,
     tags: []
   },
-]
+]*/
 
 var defaultFilters = {
   search: null,
@@ -530,7 +539,6 @@ var defaultSort = {
 export default {
   name: "Tasks",
   data: () => ({
-    tasks: dummyTasks,
     showDeleteDialog: false,
     taskToDelete: {},
     snackbar: {
@@ -538,7 +546,6 @@ export default {
       text: '',
       timeout: 2000,
     },
-    isLoading: false,
     search: null,
     dates: null,
     completionStatusOptions: [
@@ -607,14 +614,12 @@ export default {
     },
     searchTasks(searchKey) {
       var regex = new RegExp(searchKey, 'i');
-      this.isLoading = true
+
       this.tasks = this.tasks.filter(task => regex.test(task.title))
-      this.isLoading = false
+
     },
     clearSearch() {
-      this.isLoading = true
-      this.tasks = dummyTasks
-      this.isLoading = false
+      // this.tasks = dummyTasks
     },
     getFormattedDate(date) {
       if(!date) return ""
@@ -643,19 +648,19 @@ export default {
             icon: "mdi-alarm-light",
             text: "URGENT"
           }
-        case "high": 
+        case "high":
           return {
             color: "pink",
             icon: "mdi-alarm-light",
             text: "HIGH"
           }
-        case "low": 
+        case "low":
           return {
             color: "blue-gray",
             icon: "mdi-alarm-light",
             text: "LOW"
           }
-        default: 
+        default:
           return {
             color: "blue",
             icon: "mdi-alarm-light",
@@ -758,6 +763,6 @@ export default {
     }
   },
   computed: {},
-  
+
 }
 </script>
