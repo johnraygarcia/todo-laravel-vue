@@ -4,6 +4,8 @@ use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\TaskController;
+use App\Models\User;
+use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,6 +20,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    Route::get('/user', function() {
+        return Response::json(['user' => Auth::user()]);
+    });
 
     Route::get('/task', [TaskController::class, 'getAll']);
 
@@ -36,9 +42,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/task', [TaskController::class, 'delete']);
 
     Route::post('/auth/logout', [AuthController::class, 'logout']);
-
-
-
 });
 
 Route::post('/auth/register', [AuthController::class, 'createUser']);

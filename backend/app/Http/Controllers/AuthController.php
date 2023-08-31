@@ -147,9 +147,9 @@ class AuthController extends Controller
         abort(401, 'Login failed');
     }
 
-    public function logout(Request $request)
+    public function logout()
     {
-        $request->user()->currentAccessToken()->delete();
+        Auth::user()->tokens()->delete();
     }
 
     private function createUserToken(User $user)
