@@ -103,5 +103,13 @@ class Task extends Model
         return $this->hasMany(Attachment::class);
     }
 
+    /**
+     * The roles that belong to the user.
+     */
+    public function tags(): BelongsToMany
+    {
+        return $this->belongsToMany(Tag::class);
+    }
+
 
 }

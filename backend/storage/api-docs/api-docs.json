@@ -470,6 +470,23 @@
                 },
                 "type": "object"
             },
+            "Tag": {
+                "properties": {
+                    "id": {
+                        "description": "Task identifier",
+                        "type": "integer",
+                        "example": "1",
+                        "nullable": "false"
+                    },
+                    "name": {
+                        "description": "tag name",
+                        "type": "string",
+                        "example": "Important",
+                        "nullable": "false"
+                    }
+                },
+                "type": "object"
+            },
             "Task": {
                 "properties": {
                     "id": {

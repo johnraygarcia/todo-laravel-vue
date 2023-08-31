@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AttachmentController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TagController;
 use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,6 +30,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/task/{id}/attachment', [AttachmentController::class, 'upload']);
     Route::get('/task/{id}/attachment', [AttachmentController::class, 'getAttachmentsByTask']);
     Route::delete('/task/{id}/attachment/{attachmentId}', [AttachmentController::class, 'delete']);
+
+    Route::get('/tag', [TagController::class, 'getAll']);
 
     Route::delete('/task', [TaskController::class, 'delete']);
 

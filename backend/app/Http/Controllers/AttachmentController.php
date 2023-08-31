@@ -84,11 +84,12 @@ class AttachmentController extends Controller
             'task_id' => $taskId
         ])->first();
 
-        if ($attachment) {
-            Storage::delete($attachment->filename);
-            $attachment->delete();
+        if (!$attachment) {
+            abort(404, 'Attachment not found');
         }
-        abort(404, 'Attachment not found');
+
+        Storage::delete($attachment->filename);
+        $attachment->delete();
     }
 
     private function checkUserIsOwner(Task $task): void
