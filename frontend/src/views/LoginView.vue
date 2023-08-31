@@ -2,8 +2,8 @@
   <v-container fluid class="fill-height login bg-primary">
      <v-row>
         <v-col class="d-flex justify-center">
-          <v-card 
-            class="mx-auto px-6 py-8" 
+          <v-card
+            class="mx-auto px-6 py-8"
             min-width="344"
           >
             <v-img
@@ -11,7 +11,7 @@
               class="mb-2"
               contain
             />
-            
+
             <v-form
               v-model="form"
               @submit.prevent="onSubmit"
@@ -32,6 +32,7 @@
                 clearable
                 label="Password"
                 placeholder="Enter your password"
+                type="password"
               ></v-text-field>
 
               <br>
@@ -65,6 +66,11 @@
 </template>
 
 <script>
+import axios from 'axios'
+
+
+  axios.defaults.withCredentials = true
+  axios.defaults.baseURL = 'http://localhost'
   export default {
     data: () => ({
       form: false,
@@ -79,7 +85,15 @@
 
         this.loading = true
 
-        setTimeout(() => (this.loading = false), 2000)
+        axios.get('/sanctum/csrf-cookie').then(response => {
+           axios.post('api/auth/login', {
+            'email' : this.email,
+            'password' : this.password
+          }).then(data => {
+            this.$router.push({name: 'tasks'})
+          })
+        })
+        // setTimeout(() => (this.loading = false), 2000)
       },
       required (v) {
         return !!v || 'Field is required'
