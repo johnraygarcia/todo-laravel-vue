@@ -30,8 +30,8 @@ export const useTasksStore = defineStore('tasks', {
                             break;
                     }
                     const pl = {
-                        key: task.priority,
-                        value: prioLabel
+                        key: prioLabel,
+                        value: task.priority
                     }
                     return { ...task, priorityLevel: pl}
                 });
