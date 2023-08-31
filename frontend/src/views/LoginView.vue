@@ -66,11 +66,12 @@
 </template>
 
 <script>
-import axios from 'axios'
+import { useTasksStore } from '@/stores/tasks';
+import { useUserStore } from '@/stores/user';
 
+  const userStore = useUserStore();
+  const taskStore = useTasksStore();
 
-  axios.defaults.withCredentials = true
-  axios.defaults.baseURL = 'http://localhost'
   export default {
     data: () => ({
       form: false,
@@ -85,12 +86,14 @@ import axios from 'axios'
 
         this.loading = true
 
-        axios.get('/sanctum/csrf-cookie').then(response => {
+        window.axios.get('/sanctum/csrf-cookie').then(response => {
            axios.post('api/auth/login', {
             'email' : this.email,
             'password' : this.password
           }).then(data => {
             localStorage.setItem('access_token', data.data.token)
+            userStore.getCurrentUser();
+            taskStore.reset();
             this.$router.push({name: 'tasks'})
           })
         })

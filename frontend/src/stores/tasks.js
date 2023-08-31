@@ -9,6 +9,9 @@ export const useTasksStore = defineStore('tasks', {
 
     },
     actions: {
+        reset () {
+            this.tasks = []
+        },
         async getTasks(){
             this.isLoading = true;
             await window.axios.get('/api/task').then(result => {

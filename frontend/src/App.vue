@@ -1,3 +1,59 @@
+<script setup>
+import { useRoute } from 'vue-router'
+import { useUserStore } from './stores/user';
+import { onMounted } from 'vue';
+import { useTasksStore } from './stores/tasks';
+
+const taskStore = useTasksStore();
+const userStore = useUserStore();
+
+onMounted(() => {
+  userStore.getCurrentUser();
+})
+
+const route = useRoute()
+</script>
+
+<script>
+
+
+export default {
+  data: () => ({
+    drawer: true,
+    rail: true,
+    items: [
+        {
+          title: 'Tasks',
+          key: 2,
+          icon: 'mdi-format-list-checks',
+          to: '/',
+        },
+        {
+          title: 'Tags',
+          key: 3,
+          icon: 'mdi-tag-outline',
+          to: '/tags',
+          color: 'secondary'
+        },
+        {
+          title: 'My Account',
+          key: 1,
+          icon: 'mdi-account',
+          to: "/profile",
+        },
+      ]
+  }),
+  methods: {
+    logout() {
+      window.axios.get('http://localhost:80/sanctum/csrf-cookie').then(response => {
+          window.axios.post('/api/auth/logout').then(response => {
+          this.$router.push({name: 'login'});
+        });
+      })
+    }
+  }
+}
+</script>
 <template>
   <v-app>
     <v-navigation-drawer
@@ -21,7 +77,7 @@
 
       <v-list-item
         prepend-avatar="https://randomuser.me/api/portraits/men/85.jpg"
-        title="Hi, John!"
+        :title="userStore.user.name"
         nav
       >
         <template v-slot:append>
@@ -64,52 +120,4 @@
   </v-app>
 </template>
 
-<script setup>
-import { useRoute } from 'vue-router'
-import { ref } from 'vue'
-import axios from 'axios';
 
-
-
-const route = useRoute()
-</script>
-
-<script>
-
-export default {
-  data: () => ({
-    drawer: true,
-    rail: true,
-    items: [
-        {
-          title: 'Tasks',
-          key: 2,
-          icon: 'mdi-format-list-checks',
-          to: '/',
-        },
-        {
-          title: 'Tags',
-          key: 3,
-          icon: 'mdi-tag-outline',
-          to: '/tags',
-          color: 'secondary'
-        },
-        {
-          title: 'My Account',
-          key: 1,
-          icon: 'mdi-account',
-          to: "/profile",
-        },
-      ],
-  }),
-  methods: {
-    logout() {
-      window.axios.get('http://localhost:80/sanctum/csrf-cookie').then(response => {
-          window.axios.post('/api/auth/logout').then(response => {
-          this.$router.push({name: 'login'});
-        });
-      })
-    }
-  }
-}
-</script>
