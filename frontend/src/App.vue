@@ -105,7 +105,7 @@ export default {
   methods: {
     logout() {
       window.axios.get('http://localhost:80/sanctum/csrf-cookie').then(response => {
-          instance.post('/api/auth/logout').then(response => {
+          window.axios.post('/api/auth/logout').then(response => {
           this.$router.push({name: 'login'});
         });
       })
