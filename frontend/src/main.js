@@ -24,7 +24,7 @@ instance.interceptors.request.use(config => {
 window.axios=instance
 
 createApp(App)
+  .use(pinia)
   .use(router)
   .use(vuetify)
-  .use(pinia)
   .mount('#app')

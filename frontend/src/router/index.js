@@ -1,5 +1,8 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import TasksView from '../views/TasksView.vue'
+import { useUserStore } from '@/stores/user'
+
+
 
 const routes = [
   {
@@ -35,6 +38,16 @@ const routes = [
 const router = createRouter({
   history: createWebHashHistory(),
   routes
+})
+
+router.beforeEach(async(to, from) => {
+  const userStore = useUserStore();
+  if(await userStore.getCurrentUser() === 401 && to.name !== 'login') {
+     // redirect the user to the login page
+     return { name: 'login' }
+  } else {
+    return true;
+  }
 })
 
 export default router
