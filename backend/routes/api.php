@@ -40,9 +40,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/tag', [TagController::class, 'getAll']);
 
     Route::delete('/task', [TaskController::class, 'delete']);
-
-    Route::post('/auth/logout', [AuthController::class, 'logout']);
 });
 
 Route::post('/auth/register', [AuthController::class, 'createUser']);
 Route::post('/auth/login', [AuthController::class, 'login']);
+Route::post('/auth/logout', [AuthController::class, 'logout']);

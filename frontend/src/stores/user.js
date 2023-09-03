@@ -15,6 +15,10 @@ export const useUserStore = defineStore('user', {
             await window.axios.get('/api/user').then(result => {
                 this.user = result.data.user
             })
-        }
+        },
+        async resetCurrentUser(){
+            this.isLoading = true;
+            this.user = {}
+        },
     }
 })

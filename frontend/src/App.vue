@@ -7,6 +7,7 @@ import { useTasksStore } from './stores/tasks';
 const taskStore = useTasksStore();
 const userStore = useUserStore();
 
+
 onMounted(() => {
   userStore.getCurrentUser();
 })
@@ -47,6 +48,7 @@ export default {
     logout() {
       window.axios.get('http://localhost:80/sanctum/csrf-cookie').then(response => {
           window.axios.post('/api/auth/logout').then(response => {
+          //userStore.resetCurrentUser();
           this.$router.push({name: 'login'});
         });
       })
