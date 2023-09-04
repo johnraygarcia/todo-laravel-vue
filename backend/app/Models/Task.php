@@ -7,6 +7,7 @@ use DateTime;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 
@@ -82,8 +83,10 @@ class Task extends Model
 
     public static function create(Request $request)
     {
+
         $task = new Task($request->all());
         $user = Auth::user();
+        $task->setOrder($user->tasks()->count() + 1);
         $user->tasks()->save($task);
         return $task;
     }
@@ -111,5 +114,9 @@ class Task extends Model
         return $this->belongsToMany(Tag::class);
     }
 
+    public function setOrder(int $order)
+    {
+        $this->order = $order;
+    }
 
 }

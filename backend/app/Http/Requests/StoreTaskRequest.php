@@ -32,7 +32,6 @@ class StoreTaskRequest extends FormRequest
             'title' => 'required',
             'status' => 'required',
             'priority' => 'required',
-            'order' => 'required'
         ];
     }
 }

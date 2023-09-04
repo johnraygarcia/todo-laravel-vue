@@ -10,7 +10,7 @@ use Response;
 
 class TaskController extends Controller
 {
-    private const ITEMS_PER_PAGE = 5;
+    private const ITEMS_PER_PAGE = 10;
 
     public function __construct(private StoreTaskRequest $request)
     {

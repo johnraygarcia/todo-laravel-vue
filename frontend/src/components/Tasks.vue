@@ -1,6 +1,8 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useTasksStore } from '../stores/tasks'
+import TaskForm from '../components/TaskForm.vue'
+import Pagination from '../components/Pagination.vue'
 
 const drawer = ref(null)
 const taskStore = useTasksStore();
@@ -248,120 +250,10 @@ onMounted(() => {
       </v-col>
     </v-row>
 
-    <v-row justify="center">
-      <v-dialog
-        v-model="dialog"
-        persistent
-        width="1024"
-      >
-        <template v-slot:activator="{ props }">
-          <v-layout-item
-            model-value position="bottom"
-            class="text-end"
-            size="88"
-          >
-          <div class="ma-4">
-            <v-btn
-              v-bind="props"
-              icon="mdi-plus"
-              size="large"
-              color="secondary"
-              elevation="8"
-            />
-          </div>
-        </v-layout-item>
-        </template>
+    <Pagination />
 
-        <v-card class="pa-4">
-          <v-card-text>
-            <v-card-title>
-              <span class="text-h5">Add Task</span>
-            </v-card-title>
-            <v-container>
-              <v-row>
-                <v-col
-                  cols="12"
-                  sm="6"
-                  md="6"
-                >
-                  <v-text-field
-                    label="Title*"
-                    variant="outlined"
-                    required
-                  ></v-text-field>
+    <TaskForm />
 
-                  <v-textarea
-                    clearable
-                    label="Description*"
-                    variant="outlined"
-                    required
-                  ></v-textarea>
-                </v-col>
-
-
-                <v-col
-                  cols="12"
-                  sm="6"
-                  md="6"
-                >
-                  <v-radio-group
-                    inline
-                    label="Priorty"
-                  >
-                    <v-radio
-                        v-for="{value, label} in priorityLevelOptions"
-                        :key="value"
-                        :value="value"
-                        :label="label"
-                        @click="filterByPriority(value)"
-                    />
-                  </v-radio-group>
-
-                  <VueDatePicker
-                    class="mb-6"
-                    clearable
-                    placeholder="Select Due Date"
-                    ignore-time-validation
-                    teleport-center
-                    hide-input-icon
-                    :hide-navigation="['time', 'minute', 'hours', 'seconds']"
-                    :enable-time-picker="false"
-                    format="yyyy-MM-dd"
-                    :teleport="true"
-                  />
-
-                  <v-select
-                    clearable
-                    chips
-                    label="Tags"
-                    :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
-                    multiple
-                    variant="outlined"
-                  ></v-select>
-                </v-col>
-              </v-row>
-            </v-container>
-            <small class="text-red">*indicates required field</small>
-          </v-card-text>
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn
-              variant="text"
-              @click="dialog = false"
-            >
-              Close
-            </v-btn>
-            <v-btn
-              color="primary"
-              variant="flat"
-              @click="dialog = false"
-            >
-              Save
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-row>
   </v-container>
 
   <v-dialog v-model="showDeleteDialog" max-width="500px">
@@ -401,127 +293,9 @@ onMounted(() => {
 </style>
 
 
-
 <script>
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
-
-/*var dummyTasks = [
-  {
-    id: 1,
-    title: "MERN Review",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc aliquam justo eu scelerisque commodo. Sed ut leo vel justo maximus tempor et et arcu. Curabitur vitae tempor ligula. Praesent gravida, sapien ac aliquam viverra, arcu nisl condimentum arcu, quis luctus libero justo sit amet purus. Suspendisse volutpat, neque et viverra scelerisque, erat purus dapibus sapien, imperdiet sodales sapien leo eu turpis. Curabitur quam sapien, elementum quis erat et, vehicula pretium justo. Quisque aliquet in justo nec iaculis. Aliquam porta neque leo, eu suscipit turpis ornare vel. Proin venenatis, dolor non bibendum semper, tellus ex consectetur sem, ut molestie augue tellus quis purus. Morbi vel eleifend nisi. Integer tellus ipsum, fringilla vel neque id, sodales accumsan ipsum.",
-    dueDate: new Date("2023-01-25"),
-    createdAt: new Date("2023-01-1"),
-    completedAt: null,
-    archivedAt: null,
-    priorityLevel: {
-      key: "urgent",
-      value: 1,
-    },
-    isCompleted: false,
-    isArchived: false,
-    tags: [
-      {title: "MERN", key: "mern" },
-      {title: "Programming", key: "programming"},
-      {title: "Review", key: "review"},
-      {title: "Job Hunt", key: "jobHunt"}
-    ]
-  },
-  {
-    id: 2,
-    title: "TypeScript Review",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc aliquam justo eu scelerisque commodo. Sed ut leo vel justo maximus tempor et et arcu. Curabitur vitae tempor ligula. Praesent gravida, sapien ac aliquam viverra, arcu nisl condimentum arcu, quis luctus libero justo sit amet purus. Suspendisse volutpat, neque et viverra scelerisque, erat purus dapibus sapien, imperdiet sodales sapien leo eu turpis. Curabitur quam sapien, elementum quis erat et, vehicula pretium justo. Quisque aliquet in justo nec iaculis. Aliquam porta neque leo, eu suscipit turpis ornare vel. Proin venenatis, dolor non bibendum semper, tellus ex consectetur sem, ut molestie augue tellus quis purus. Morbi vel eleifend nisi. Integer tellus ipsum, fringilla vel neque id, sodales accumsan ipsum.",
-    dueDate: new Date("2023-02-1"),
-    createdAt: new Date("2023-01-2"),
-    completedAt: null,
-    archivedAt: null,
-    priorityLevel: {
-      key: "high",
-      value: 2,
-    },
-    isCompleted: false,
-    isArchived: false,
-    tags: [
-      {title: "TypeScript", key: "typescript" },
-      {title: "Programming", key: "programming"},
-      {title: "Review", key: "review"}
-    ]
-  },
-  {
-    id: 3,
-    title: "Enroll Emma",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc aliquam justo eu scelerisque commodo. Sed ut leo vel justo maximus tempor et et arcu. Curabitur vitae tempor ligula. Praesent gravida, sapien ac aliquam viverra, arcu nisl condimentum arcu, quis luctus libero justo sit amet purus. Suspendisse volutpat, neque et viverra scelerisque, erat purus dapibus sapien, imperdiet sodales sapien leo eu turpis. Curabitur quam sapien, elementum quis erat et, vehicula pretium justo. Quisque aliquet in justo nec iaculis. Aliquam porta neque leo, eu suscipit turpis ornare vel. Proin venenatis, dolor non bibendum semper, tellus ex consectetur sem, ut molestie augue tellus quis purus. Morbi vel eleifend nisi. Integer tellus ipsum, fringilla vel neque id, sodales accumsan ipsum.",
-    dueDate: new Date("2023-01-10"),
-    createdAt: new Date("2023-01-5"),
-    completedAt: null,
-    archivedAt: new Date("2023-01-25"),
-    priorityLevel: {
-      key: "normal",
-      value: 3,
-    },
-    isCompleted: false,
-    isArchived: true,
-    tags: [
-      {title: "Emma", key: "emma" },
-      {title: "Homeschooling", key: "homeschooling"},
-    ]
-  },
-  {
-    id: 4,
-    title: "Set up Study Area",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc aliquam justo eu scelerisque commodo. Sed ut leo vel justo maximus tempor et et arcu. Curabitur vitae tempor ligula. Praesent gravida, sapien ac aliquam viverra, arcu nisl condimentum arcu, quis luctus libero justo sit amet purus. Suspendisse volutpat, neque et viverra scelerisque, erat purus dapibus sapien, imperdiet sodales sapien leo eu turpis. Curabitur quam sapien, elementum quis erat et, vehicula pretium justo. Quisque aliquet in justo nec iaculis. Aliquam porta neque leo, eu suscipit turpis ornare vel. Proin venenatis, dolor non bibendum semper, tellus ex consectetur sem, ut molestie augue tellus quis purus. Morbi vel eleifend nisi. Integer tellus ipsum, fringilla vel neque id, sodales accumsan ipsum.",
-    dueDate: new Date("2023-04-20"),
-    createdAt: new Date("2023-04-01"),
-    completedAt: new Date("2023-05-01"),
-    archivedAt: null,
-    priorityLevel: {
-      key: "low",
-      value: 4,
-    },
-    isCompleted: true,
-    isArchived: false,
-    tags: [
-      {title: "Adam", key: "adam" },
-      {title: "Homeschooling", key: "homeschooling"},
-    ]
-  },
-  {
-    id: 5,
-    title: "Practice Coding Challege",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc aliquam justo eu scelerisque commodo. Sed ut leo vel justo maximus tempor et et arcu. Curabitur vitae tempor ligula. Praesent gravida, sapien ac aliquam viverra, arcu nisl condimentum arcu, quis luctus libero justo sit amet purus. Suspendisse volutpat, neque et viverra scelerisque, erat purus dapibus sapien, imperdiet sodales sapien leo eu turpis. Curabitur quam sapien, elementum quis erat et, vehicula pretium justo. Quisque aliquet in justo nec iaculis. Aliquam porta neque leo, eu suscipit turpis ornare vel. Proin venenatis, dolor non bibendum semper, tellus ex consectetur sem, ut molestie augue tellus quis purus. Morbi vel eleifend nisi. Integer tellus ipsum, fringilla vel neque id, sodales accumsan ipsum.",
-    dueDate: new Date("2023-03-05"),
-    createdAt: new Date("2023-03-01"),
-    completedAt: null,
-    archivedAt: new Date("2023-06-01"),
-    priorityLevel: {
-      key: "normal",
-      value: 3,
-    },
-    isCompleted: false,
-    isArchived: true,
-    tags: [
-      {title: "Programming", key: "programming"},
-      {title: "Review Review Review Review", key: "review"}
-    ]
-  },
-  {
-    id: 6,
-    title: "Submit applications",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc aliquam justo eu scelerisque commodo. Sed ut leo vel justo maximus tempor et et arcu. Curabitur vitae tempor ligula. Praesent gravida, sapien ac aliquam viverra, arcu nisl condimentum arcu, quis luctus libero justo sit amet purus. Suspendisse volutpat, neque et viverra scelerisque, erat purus dapibus sapien, imperdiet sodales sapien leo eu turpis. Curabitur quam sapien, elementum quis erat et, vehicula pretium justo. Quisque aliquet in justo nec iaculis. Aliquam porta neque leo, eu suscipit turpis ornare vel. Proin venenatis, dolor non bibendum semper, tellus ex consectetur sem, ut molestie augue tellus quis purus. Morbi vel eleifend nisi. Integer tellus ipsum, fringilla vel neque id, sodales accumsan ipsum.",
-    dueDate: new Date("2023-03-01"),
-    createdAt: new Date("2023-01-10"),
-    completedAt: new Date("2023-05-10"),
-    archivedAt: null,
-    priorityLevel: {
-      key: "urgent",
-      value: 1,
-    },
-    isCompleted: true,
-    isArchived: false,
-    tags: []
-  },
-]*/
 
 var defaultFilters = {
   search: null,
@@ -546,6 +320,7 @@ export default {
       text: '',
       timeout: 2000,
     },
+    selectedTask: null,
     search: null,
     dates: null,
     completionStatusOptions: [
@@ -576,8 +351,7 @@ export default {
     selectedArchiveStatus: null,
     selectedPriorityLevel: null,
     selectedSortOrder: null,
-    selectedSortBy: null,
-    dialog: false
+    selectedSortBy: null
   }),
   methods: {
     toggleIsCompleted(id) {
@@ -762,7 +536,7 @@ export default {
       this.tasks = dummyTasks
     }
   },
-  computed: {},
+  computed: {}
 
 }
 </script>

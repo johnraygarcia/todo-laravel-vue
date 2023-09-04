@@ -12,7 +12,7 @@ export default defineComponent({
   name: 'TasksView',
 
   components: {
-    Tasks,
+    Tasks
   },
 });
 </script>

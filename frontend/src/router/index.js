@@ -2,8 +2,6 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import TasksView from '../views/TasksView.vue'
 import { useUserStore } from '@/stores/user'
 
-
-
 const routes = [
   {
     path: '/',
@@ -42,7 +40,7 @@ const router = createRouter({
 
 router.beforeEach(async(to, from) => {
   const userStore = useUserStore();
-  if(await userStore.getCurrentUser() === 401 && to.name !== 'login') {
+  if(await userStore.getCurrentUser() === 401 && !['login', 'register'].includes(to.name)) {
      // redirect the user to the login page
      return { name: 'login' }
   } else {

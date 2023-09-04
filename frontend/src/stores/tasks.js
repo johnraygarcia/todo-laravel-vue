@@ -2,20 +2,23 @@ import { defineStore } from "pinia";
 
 export const useTasksStore = defineStore('tasks', {
     state: () => ({
-        tasks: [],
-        isLoading: false
+        tasks: {},
+        isLoading: false,
+        currentPage: null,
+        lastPage: null,
     }),
     getters: {
-
+        // computed methods
     },
     actions: {
         reset () {
-            this.tasks = []
+            this.tasks = {}
         },
         async getTasks(){
             this.isLoading = true;
             await window.axios.get('/api/task').then(result => {
                 this.tasks = result.data.data.map((task) => {
+
                     let prioLabel = 'low';
                     switch (task.priority) {
                         case 1:
@@ -37,8 +40,12 @@ export const useTasksStore = defineStore('tasks', {
                     }
                     return { ...task, priorityLevel: pl}
                 });
+                this.currentPage = result.data.current_page;
+                this.lastPage = result.data.last_page;
                 this.isLoading = false;
             })
+
+            console.log(this.tasks);
         }
     }
 })

@@ -5,6 +5,7 @@ import vuetify from './plugins/vuetify'
 import { createPinia } from 'pinia'
 import { loadFonts } from './plugins/webfontloader'
 import axios from 'axios'
+import { useAppStore } from './stores/app'
 
 loadFonts()
 const pinia = createPinia();
