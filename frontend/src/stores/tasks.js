@@ -16,7 +16,7 @@ export const useTasksStore = defineStore('tasks', {
         },
         async getTasks(){
             this.isLoading = true;
-            await window.axios.get('/api/task').then(result => {
+            await window.axios.get('/api/task', { params : {page : this.currentPage}}).then(result => {
                 this.tasks = result.data.data.map((task) => {
 
                     let prioLabel = 'low';
@@ -44,8 +44,6 @@ export const useTasksStore = defineStore('tasks', {
                 this.lastPage = result.data.last_page;
                 this.isLoading = false;
             })
-
-            console.log(this.tasks);
         }
     }
 })

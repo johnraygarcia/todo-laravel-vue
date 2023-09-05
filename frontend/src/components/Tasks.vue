@@ -5,10 +5,10 @@ import TaskForm from '../components/TaskForm.vue'
 import Pagination from '../components/Pagination.vue'
 
 const drawer = ref(null)
-const taskStore = useTasksStore();
+const tasksStore = useTasksStore();
 
 onMounted(() => {
-  taskStore.getTasks();
+  tasksStore.getTasks();
 })
 
 </script>
@@ -151,7 +151,7 @@ onMounted(() => {
 
     <v-row>
       <v-col
-        v-for="task in taskStore.tasks"
+        v-for="task in tasksStore.tasks"
         :key="task.id"
         cols="12"
         md="4"
@@ -234,6 +234,7 @@ onMounted(() => {
                 <v-list-item
                   prependIcon="mdi-pencil"
                   title="Edit"
+                  @click="editTask(task)"
                 ></v-list-item>
 
                 <v-list-item
@@ -296,6 +297,7 @@ onMounted(() => {
 <script>
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
+import { useTaskStore } from '@/stores/task';
 
 var defaultFilters = {
   search: null,
@@ -309,6 +311,8 @@ var defaultSort = {
   sortOrder: "asc",
   sortBy: "priorityLevel",
 }
+
+
 
 export default {
   name: "Tasks",
@@ -351,7 +355,8 @@ export default {
     selectedArchiveStatus: null,
     selectedPriorityLevel: null,
     selectedSortOrder: null,
-    selectedSortBy: null
+    selectedSortBy: null,
+    taskStore: useTaskStore()
   }),
   methods: {
     toggleIsCompleted(id) {
@@ -534,6 +539,9 @@ export default {
       this.selectedSortOrder = sortOrder
       this.selectedSortBy = sortBy
       this.tasks = dummyTasks
+    },
+    editTask(task) {
+      this.taskStore.task = task
     }
   },
   computed: {}

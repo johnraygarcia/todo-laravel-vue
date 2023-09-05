@@ -140,8 +140,6 @@ const taskState = useTaskStore()
     methods: {
       onSubmit () {
         if (!this.form) return
-
-        //taskState.addTask();
       },
       required (v) {
         return !!v || 'Field is required'

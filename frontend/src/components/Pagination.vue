@@ -8,25 +8,11 @@
 <script setup>
 
 import { useTasksStore } from '@/stores/tasks';
+import { storeToRefs } from 'pinia';
+import { watch } from 'vue';
 const tasksStore = useTasksStore();
-
-// export default {
-
-    // computed: {
-    //     currentPage: {
-    //         get() {
-
-    //             return tasksStore.tasks.current_page
-    //         },
-    //         set() {
-
-    //         }
-    //     },
-    //     lastPage: {
-    //         get() {
-    //             return this.tasksStore.tasksStore.tasks.last_page
-    //         }
-    //     }
-    // }
-// }
+const { currentPage } = storeToRefs(tasksStore);
+watch(currentPage, () => {
+    tasksStore.getTasks();
+});
 </script>
