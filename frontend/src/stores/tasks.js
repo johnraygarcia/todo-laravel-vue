@@ -44,6 +44,11 @@ export const useTasksStore = defineStore('tasks', {
                 this.lastPage = result.data.last_page;
                 this.isLoading = false;
             })
+        },
+        async delete(id) {
+            await window.axios.delete('/api/task/' + id).then(result => {
+                this.getTasks()
+            })
         }
     }
 })

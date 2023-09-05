@@ -3,6 +3,9 @@ import { defineStore } from "pinia";
 export const useAppStore = defineStore('app', {
     state: () => ({
         showTaskDialog: false,
+        showSnackbar: false,
+        snackbarText: '',
+        snackbarColor: 'success'
     }),
     getters: {
     },
@@ -12,6 +15,9 @@ export const useAppStore = defineStore('app', {
         },
         toggleTaskDialog() {
             this.showTaskDialog = !this.showTaskDialog
+        },
+        toggleSnackbar() {
+            this.showSnackbar = !this.showSnackbar
         }
     }
 })

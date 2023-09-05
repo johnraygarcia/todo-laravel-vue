@@ -1,5 +1,5 @@
 <template>
-    <v-pagination
+    <v-pagination class="mt-6"
         v-model="tasksStore.currentPage"
         :total-visible="10"
         :length="tasksStore.lastPage">

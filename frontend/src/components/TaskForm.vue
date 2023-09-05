@@ -63,9 +63,10 @@
                     <v-radio-group
                         inline
                         label="Priorty"
+                        v-model="taskState.task.priority"
                     >
                         <v-radio
-                            v-for="{value, label} in PRIORITY_LEVEL_OPTIONS"
+                            v-for="{value, label} in priorityLevelOptions"
                             :key="value"
                             :value="value"
                             :label="label"
@@ -124,7 +125,6 @@
 <script setup>
 import { useAppStore } from '@/stores/app';
 import { useTaskStore } from '@/stores/task';
-import { PRIORITY_LEVEL_OPTIONS } from '@/helpers/contants'
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 const appState = useAppStore()
@@ -132,18 +132,20 @@ const taskState = useTaskStore()
 </script>
 
 <script>
-  export default {
-    data: () => ({
-      form: false
-    }),
+    import { constants } from '@/helpers'
+    export default {
+        data: () => ({
+            form: false,
+            priorityLevelOptions: constants.PRIORITY_LEVEL_OPTIONS
+        }),
 
-    methods: {
-      onSubmit () {
-        if (!this.form) return
-      },
-      required (v) {
-        return !!v || 'Field is required'
-      },
-    },
-  }
+        methods: {
+            onSubmit () {
+                if (!this.form) return
+            },
+            required (v) {
+                return !!v || 'Field is required'
+            },
+        },
+    }
 </script>

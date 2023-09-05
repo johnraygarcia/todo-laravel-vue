@@ -39,7 +39,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/tag', [TagController::class, 'getAll']);
 
-    Route::delete('/task', [TaskController::class, 'delete']);
+    Route::delete('/task/{id}', [TaskController::class, 'delete']);
 });
 
 Route::post('/auth/register', [AuthController::class, 'createUser']);

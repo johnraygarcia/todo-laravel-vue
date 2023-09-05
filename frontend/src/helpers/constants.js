@@ -10,10 +10,10 @@
   ]
 
   const PRIORITY_LEVEL_OPTIONS = [
-    { label: "Urgent", value: "urgent"},
-    { label: "High", value: "high"},
-    { label: "Normal", value: "normal"},
-    { label: "Low", value: "low"},
+    { label: "Urgent", value: 1},
+    { label: "High", value: 2},
+    { label: "Normal", value: 3},
+    { label: "Low", value: 4},
   ]
 
   const SORT_BY_OPTIONS = [

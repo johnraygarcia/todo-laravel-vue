@@ -24,7 +24,7 @@ class StoreTaskRequest extends FormRequest
      */
     public function rules(): array
     {
-        if (request()->method() === 'GET') {
+        if (in_array(strtolower(request()->method()), ['get', 'delete'])) {
             return [];
         }
 

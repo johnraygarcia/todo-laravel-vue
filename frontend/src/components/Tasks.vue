@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import { useTasksStore } from '../stores/tasks'
 import TaskForm from '../components/TaskForm.vue'
 import Pagination from '../components/Pagination.vue'
+import Snackbar from '../components/Snackbar.vue'
 
 const drawer = ref(null)
 const tasksStore = useTasksStore();
@@ -157,7 +158,7 @@ onMounted(() => {
         md="4"
         lg="3"
       >
-        <v-card :key="task.id" :color="!(task.isCompleted || task.isArchived) ? 'primary' : ''">
+        <v-card :key="task.id" :color="!(task.status || task.is_archived) ? 'primary' : ''">
           <v-card-item>
             <v-card-title>{{ task.title }}</v-card-title>
             <v-card-subtitle >
@@ -169,7 +170,7 @@ onMounted(() => {
                 class="mr-2"
               ></v-chip>
               <v-chip
-                v-if="task.isCompleted"
+                v-if="task.status"
                 color="success"
                 prepend-icon="mdi-check"
                 size="x-small"
@@ -177,7 +178,7 @@ onMounted(() => {
                 class="mr-2"
               ></v-chip>
               <v-chip
-                v-if="task.isArchived"
+                v-if="task.is_archived"
                 color="gray"
                 prepend-icon="mdi-archive"
                 size="x-small"
@@ -209,7 +210,7 @@ onMounted(() => {
               :icon="task.isCompleted ? 'mdi-undo' : 'mdi-check'"
               :disabled="task.isArchived"
               aria-label="toggle isComplete"
-              @click="toggleIsCompleted(task.id)"
+              @click="toggleIsCompleted(task)"
             ></v-btn>
 
             <v-btn
@@ -218,7 +219,7 @@ onMounted(() => {
               :icon="task.isArchived ? 'mdi-undo' : 'mdi-archive'"
               :disabled="task.isCompleted"
               aria-label="toggle isArchive"
-              @click="toggleIsArchived(task.id)"
+              @click="toggleIsArchived(task)"
             ></v-btn>
 
             <v-menu transition="scale-transition">
@@ -239,7 +240,7 @@ onMounted(() => {
 
                 <v-list-item
                   :disabled="task.isCompleted || task.isArchived"
-                  @click="onClickDelete(task)"
+                  @click="deleteTask(task, true)"
                   prependIcon="mdi-delete"
                   base-color="red"
                   title="Delete"
@@ -252,7 +253,6 @@ onMounted(() => {
     </v-row>
 
     <Pagination />
-
     <TaskForm />
 
   </v-container>
@@ -264,26 +264,12 @@ onMounted(() => {
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn text @click="showDeleteDialog = false">Close</v-btn>
-        <v-btn color="red"  variant="flat" text @click="deleteTask(taskToDelete.id)">Delete</v-btn>
+        <v-btn color="red"  variant="flat" text @click="deleteTask(taskToDelete, false)">Delete</v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
 
-  <v-snackbar
-    v-model="snackbar.showSnackbar"
-    :timeout="snackbar.timeout"
-  >
-    {{ snackbar.text }}
-    <template v-slot:actions>
-      <v-btn
-        color="blue"
-        variant="text"
-        @click="snackbar = false"
-      >
-        Close
-      </v-btn>
-    </template>
-  </v-snackbar>
+  <Snackbar />
 </template>
 
 <style lang="scss">
@@ -298,6 +284,7 @@ onMounted(() => {
 import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 import { useTaskStore } from '@/stores/task';
+import { useAppStore } from '@/stores/app';
 
 var defaultFilters = {
   search: null,
@@ -311,8 +298,6 @@ var defaultSort = {
   sortOrder: "asc",
   sortBy: "priorityLevel",
 }
-
-
 
 export default {
   name: "Tasks",
@@ -356,61 +341,48 @@ export default {
     selectedPriorityLevel: null,
     selectedSortOrder: null,
     selectedSortBy: null,
-    taskStore: useTaskStore()
+    taskStore: useTaskStore(),
+    tasksStore: useTasksStore(),
+    appStore: useAppStore()
   }),
   methods: {
-    toggleIsCompleted(id) {
-      let task = this.tasks.filter(task => task.id === id)[0]
-      task.isCompleted = !task.isCompleted
-      this.snackbar = {
-        ...this.snackbar,
-        showSnackbar: true,
-        text: task.isCompleted ? "Succesfully marked item as COMPLETED" : "Successfully restored item to TO DO"
-      }
+    toggleIsCompleted(task) {
+      task.status = !task.status
+      this.taskStore.task = task
+      this.taskStore.updateTask()
     },
-    toggleIsArchived(id) {
-      let task = this.tasks.filter(task => task.id === id)[0]
-      task.isArchived = !task.isArchived
-      this.snackbar = {
-        ...this.snackbar,
-        showSnackbar: true,
-        text: task.isArchived ? "Succesfully archived item" : "Successfully unarchived item"
-      }
+    toggleIsArchived(task) {
+      task.is_archived = !task.is_archived
+      this.taskStore.task = task
+      this.taskStore.updateTask()
     },
-    onClickDelete(task) {
+    deleteTask(task, confirm) {
       this.taskToDelete = task
-      this.showDeleteDialog = !this.showDeleteDialog
-    },
-    deleteTask(id) {
-      this.tasks = this.tasks.filter(task => task.id !== id)
-      this.showDeleteDialog = false
-      this.taskToDelete = {}
-      this.snackbar = {
-        ...this.snackbar,
-        showSnackbar: true,
-        text: "Succesfully deleted item"
+      if (confirm) {
+        this.showDeleteDialog = !this.showDeleteDialog
+      } else {
+        this.tasksStore.delete(task.id)
+        this.showDeleteDialog = false
+        this.appStore.showSnackbar = true
+        this.appStore.snackbarText = 'Successfully delete task'
       }
     },
     searchTasks(searchKey) {
       var regex = new RegExp(searchKey, 'i');
-
       this.tasks = this.tasks.filter(task => regex.test(task.title))
-
     },
     clearSearch() {
       // this.tasks = dummyTasks
     },
     getFormattedDate(date) {
       if(!date) return ""
-
-      var year = date.getFullYear().toString();
-      var month = (date.getMonth() + 101).toString().substring(1);
-      var day = (date.getDate() + 100).toString().substring(1);
-      return year + "-" + month + "-" + day;
+      var utcDate = new Date(date + ' UTC'); // laravel update_at date is saved in UTC
+      var localDate = new Date(utcDate);
+      return new Intl.DateTimeFormat('en-US').format(localDate) // converted to browser data/time
     },
     getSubtext(task) {
       if(task.isCompleted) return this.getFormattedDate(task.completedAt)
-      else if (task.isArchived) return this.getFormattedDate(task.archivedAt)
+      else if (task.is_archived) return this.getFormattedDate(new Date(task.updated_at))
       return this.getFormattedDate(task.dueDate)
     },
     truncateDesc(desc) {
@@ -542,9 +514,8 @@ export default {
     },
     editTask(task) {
       this.taskStore.task = task
+      this.appStore.showTaskDialog = true;
     }
-  },
-  computed: {}
-
+  }
 }
 </script>
