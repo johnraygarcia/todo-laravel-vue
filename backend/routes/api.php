@@ -37,10 +37,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/task/{id}/attachment', [AttachmentController::class, 'getAttachmentsByTask']);
     Route::delete('/task/{id}/attachment/{attachmentId}', [AttachmentController::class, 'delete']);
 
+
     Route::get('/tag', [TagController::class, 'getAll']);
 
     Route::delete('/task/{id}', [TaskController::class, 'delete']);
 });
+
+Route::get('/task/{id}/attachment/{attachmentId}/download', [AttachmentController::class, 'download']);
 
 Route::post('/auth/register', [AuthController::class, 'createUser']);
 Route::post('/auth/login', [AuthController::class, 'login']);

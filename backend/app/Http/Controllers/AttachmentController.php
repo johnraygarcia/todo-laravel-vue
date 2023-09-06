@@ -6,7 +6,7 @@ use App\Models\Attachment;
 use App\Models\Task;
 use Auth;
 use Illuminate\Http\Request;
-use Storage;
+use Illuminate\Support\Facades\Storage;
 
 class AttachmentController extends Controller
 {
@@ -52,7 +52,7 @@ class AttachmentController extends Controller
     public function upload($id)
     {
         $this->request->validate([
-            'file' => 'required|mimes:mp4,jpeg,jpg,png,csv,txt,doc,docx|max:5000'
+            'file' => 'required|mimes:mp4,jpeg,jpg,png,csv,txt,doc,docx,pdf|max:5000'
         ]);
 
         $task = Task::findOrfail($id);
@@ -60,15 +60,20 @@ class AttachmentController extends Controller
         $uploadedFile = $this->request->file('file');
         $oExtension = $uploadedFile->getClientOriginalExtension();
         $oFilename = $uploadedFile->getClientOriginalName();
-        $filename = preg_replace('/[^a-zA-Z0-9_-]+/', '-', strtolower($oFilename)).'-'.time().'.'.$oExtension;
+        $filename = preg_replace('/[^a-zA-Z0-9_-]+/', '-', substr(strtolower($oFilename), 0, 15)).'-'.time().'.'.$oExtension;
 
         // upload the file
         $uploadedFile->storeAs('uploads', $filename, 'public');
 
+        $path = Storage::putFileAs(
+            'attachments', $uploadedFile, $filename
+        );
+
         $attachment = Attachment::factory()->create([
             'filename' => $filename,
             'type' => $oExtension,
-            'task_id' => $task->id
+            'task_id' => $task->id,
+            'path' => $path
         ]);
 
         $task->attachments()->save($attachment);
@@ -90,6 +95,25 @@ class AttachmentController extends Controller
 
         Storage::delete($attachment->filename);
         $attachment->delete();
+    }
+
+    public function download($taskId, $attachmentId)
+    {
+        Task::findOrFail($taskId);
+        $attachment = Attachment::where([
+            'id' => $attachmentId,
+            'task_id' => $taskId
+        ])->first();
+
+        if (!$attachment) {
+            abort(404, 'Attachment not found');
+        }
+
+        return Storage::download($attachment->path, basename($attachment->path), [
+            'Content-Description: File Transfer',
+            'Content-Disposition: attachment',
+            'filename:' . basename($attachment->path)
+        ]);
     }
 
     private function checkUserIsOwner(Task $task): void

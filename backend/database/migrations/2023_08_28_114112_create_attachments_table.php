@@ -16,6 +16,7 @@ return new class extends Migration
             $table->id();
             $table->string('filename');
             $table->string('type');
+            $table->string('path');
             $table->foreignIdFor(Task::class);
             $table->timestamps();
         });

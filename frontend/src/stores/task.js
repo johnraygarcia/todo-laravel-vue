@@ -5,8 +5,11 @@ import { useAppStore } from "./app";
 export const useTaskStore = defineStore('task', {
     state: () => ({
         task: {
-
-        }
+            priority: 3,
+            due_date: new Date(),
+            tags: [{ id: 1, name: "tag1"}, { id: 2, name: "tag2" }]
+        },
+        attachments: []
     }),
     getters: {
         // computed methods
@@ -49,13 +52,37 @@ export const useTaskStore = defineStore('task', {
                 tasksStore.getTasks()
                 appStore.showTaskDialog = false;
                 appStore.snackbarText = 'Task is successfully updated'
-                appStore.showSnackbar = true
+                appStore.toggleSnackbar()
                 this.task = {}
             })
             .catch((errors) => {
                 console.log(errors);
                 if (errors) {}
             });
+        },
+        resetTask() {
+            this.task = {
+                priority: 3,
+                due_date: new Date()
+            }
+
+            useAppStore().toggleTaskDialog()
+        },
+        getTaskAttachments() {
+            if (this.task?.id) {
+                window.axios.get('/api/task/' + this.task.id + '/attachment' ).then((response) => {
+                    this.attachments = response.data.data
+                })
+            }
+        },
+        deleteAttachment(attachment) {
+            const appStore = useAppStore();
+            appStore.snackbarText = 'Deleting file...'
+            appStore.snackbarColor = 'info'
+            appStore.toggleSnackbar()
+            window.axios.delete('/api/task/' + this.task.id + '/attachment/'+attachment.id ).then((response) => {
+                this.getTaskAttachments()
+            })
         }
 
     }

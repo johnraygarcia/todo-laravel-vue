@@ -207,8 +207,8 @@ onMounted(() => {
             <v-btn
               size="small"
               variant="text"
-              :icon="task.isCompleted ? 'mdi-undo' : 'mdi-check'"
-              :disabled="task.isArchived"
+              :icon="task.status ? 'mdi-undo' : 'mdi-check'"
+              :disabled="task.is_archived"
               aria-label="toggle isComplete"
               @click="toggleIsCompleted(task)"
             ></v-btn>
@@ -216,8 +216,7 @@ onMounted(() => {
             <v-btn
               size="small"
               variant="text"
-              :icon="task.isArchived ? 'mdi-undo' : 'mdi-archive'"
-              :disabled="task.isCompleted"
+              :icon="task.is_archived ? 'mdi-undo' : 'mdi-archive'"
               aria-label="toggle isArchive"
               @click="toggleIsArchived(task)"
             ></v-btn>
@@ -227,7 +226,7 @@ onMounted(() => {
                 <v-btn
                   icon="mdi-dots-vertical"
                   v-bind="props"
-                  :disabled="(task.isCompleted || task.isArchived)"
+                  :disabled="(task.status || task.is_archived)"
                 ></v-btn>
               </template>
 
@@ -239,7 +238,7 @@ onMounted(() => {
                 ></v-list-item>
 
                 <v-list-item
-                  :disabled="task.isCompleted || task.isArchived"
+                  :disabled="task.status || task.is_archived"
                   @click="deleteTask(task, true)"
                   prependIcon="mdi-delete"
                   base-color="red"
