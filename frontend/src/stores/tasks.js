@@ -1,9 +1,10 @@
 import { defineStore } from "pinia";
 import { useTaskStore } from "./task";
+import { useTaskFiltersStore } from "./taskFilters";
 
 export const useTasksStore = defineStore('tasks', {
     state: () => ({
-        tasks: {},
+        tasks: [],
         isLoading: false,
         currentPage: null,
         lastPage: null,
@@ -18,7 +19,8 @@ export const useTasksStore = defineStore('tasks', {
         async getTasks(){
             this.isLoading = true;
             const taskStore = useTaskStore();
-            const {data, response} = await window.axios.get('/api/task', { params : {page : this.currentPage}})
+            const taskFiltersStore = useTaskFiltersStore()
+            const {data, response} = await window.axios.get('/api/task', { params : {page : this.currentPage, searchKey: taskFiltersStore.filter.name}})
 
             this.tasks = await Promise.all(data.data.map(async(task) => {
 

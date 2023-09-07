@@ -25,9 +25,11 @@ onBeforeMount(() => {
           auto-select-first
           clearable
           :loading="taskStore.isLoading"
-          :onUpdate:search="searchTasks"
-          :onClick:clear="clearSearch"
-          :items="tasks"
+          v-model="searchKey"
+          @update:search="searchTasks"
+          :items="tasksStore.tasks"
+          item-title="title"
+          item-value="title"
           label="Search tasks"
           append-inner-icon="mdi-magnify"
           density="comfortable"
@@ -289,6 +291,7 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 import { useTaskStore } from '@/stores/task';
 import { useAppStore } from '@/stores/app';
+import { useTaskFiltersStore } from '@/stores/taskFilters';
 import { onBeforeMount } from 'vue'
 
 var defaultFilters = {
@@ -315,7 +318,7 @@ export default {
       timeout: 2000,
     },
     selectedTask: null,
-    search: null,
+    searchKey: null,
     dates: null,
     completionStatusOptions: [
       { label: "To Do", value: "toDo"},
@@ -348,7 +351,8 @@ export default {
     selectedSortBy: null,
     taskStore: useTaskStore(),
     tasksStore: useTasksStore(),
-    appStore: useAppStore()
+    appStore: useAppStore(),
+    taskFilterStore: useTaskFiltersStore()
   }),
   methods: {
     toggleIsCompleted(task) {
@@ -372,9 +376,15 @@ export default {
         this.appStore.snackbarText = 'Successfully delete task'
       }
     },
-    searchTasks(searchKey) {
-      var regex = new RegExp(searchKey, 'i');
-      this.tasks = this.tasks.filter(task => regex.test(task.title))
+    searchTasks() {
+
+      this.taskFilterStore.filter.name = this.searchKey
+
+      clearTimeout(this._debounceTimeout)
+
+      this._debounceTimeout = setTimeout(() => {
+        this.tasksStore.getTasks()
+      }, 300)
     },
     clearSearch() {
       // this.tasks = dummyTasks
