@@ -259,6 +259,13 @@
                         "example": "1"
                     },
                     {
+                        "name": "status",
+                        "in": "query",
+                        "description": "filter task status",
+                        "required": false,
+                        "example": "1"
+                    },
+                    {
                         "name": "sortBy",
                         "in": "query",
                         "description": "field name of what to sort",

@@ -20,7 +20,11 @@ export const useTasksStore = defineStore('tasks', {
             this.isLoading = true;
             const taskStore = useTaskStore();
             const taskFiltersStore = useTaskFiltersStore()
-            const {data, response} = await window.axios.get('/api/task', { params : {page : this.currentPage, searchKey: taskFiltersStore.filter.name}})
+            const {data, response} = await window.axios.get('/api/task', { params : {
+                page : this.currentPage,
+                searchKey: taskFiltersStore.filter.name,
+                status: taskFiltersStore.filter.status
+            }})
 
             this.tasks = await Promise.all(data.data.map(async(task) => {
 

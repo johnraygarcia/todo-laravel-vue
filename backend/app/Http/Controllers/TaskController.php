@@ -196,6 +196,13 @@ class TaskController extends Controller
     *         example="1"
     *     ),
     *     @OA\Parameter(
+    *         name="status",
+    *         description="filter task status",
+    *         in="query",
+    *         required=false,
+    *         example="1"
+    *     ),
+    *     @OA\Parameter(
     *         name="sortBy",
     *         description="field name of what to sort",
     *         in="query",
@@ -248,16 +255,39 @@ class TaskController extends Controller
     public function getAll()
     {
         $searchKey = $this->request->query('searchKey') ?? null;
+        $status = $this->resolveStatusFilter();
 
         $tasks = DB::table('tasks as t')
             ->where('t.user_id', '=', Auth::user()->id)
             ->when($searchKey, function($query, $searchKey){
                 return $query->where("t.title", "ilike", "%{$searchKey}%");
             })
+            ->when($status, function($query, $status){
+                if ($status === "todo") {
+                    return $query->where("t.status", "=", "false");
+                } else {
+                    return $query->where("t.status", "=", "true");
+                }
+            })
             ->orderBy($this->sanitizedSortBy(), $this->sanitizedSortOrder())
             ->paginate(self::ITEMS_PER_PAGE);
 
         return Response::json($tasks, 200);
+    }
+
+    private function resolveStatusFilter()
+    {
+        $status = null;
+        switch($this->request->query('status')) {
+            case "1":
+                $status = 'completed';
+                break;
+            case "0":
+                $status = 'todo';
+                break;
+        }
+
+        return $status;
     }
 
     private function sanitizedSortBy(): string

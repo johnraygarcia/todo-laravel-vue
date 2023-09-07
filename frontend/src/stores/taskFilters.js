@@ -5,7 +5,18 @@ export const useTaskFiltersStore = defineStore('taskFilters', {
         filter: {
             name: null,
             priority: null,
-            due_date: null
+            due_date: null,
+            status: null
         }
     }),
+    actions: {
+        resetFilters() {
+            this.filter = {
+                name: null,
+                priority: null,
+                due_date: null,
+                status: null
+            }
+        }
+    }
 })

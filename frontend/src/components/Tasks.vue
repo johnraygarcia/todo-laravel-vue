@@ -297,7 +297,7 @@ import { onBeforeMount } from 'vue'
 var defaultFilters = {
   search: null,
   dates: null,
-  completionStatus: "toDo",
+  completionStatus: "1",
   archiveStatus: "active",
   priorityLevel: null,
 }
@@ -321,8 +321,8 @@ export default {
     searchKey: null,
     dates: null,
     completionStatusOptions: [
-      { label: "To Do", value: "toDo"},
-      { label: "Completed", value: "completed"},
+      { label: "To Do", value: "0"},
+      { label: "Completed", value: "1"},
     ],
     archiveStatusOptions: [
       { label: "Active", value: "active"},
@@ -435,13 +435,8 @@ export default {
       }
     },
     filterByCompletionStatus(value) {
-      if(value === "toDo") {
-        this.tasks = dummyTasks
-        this.tasks = this.tasks.filter(task => !task.isCompleted)
-      } else {
-        this.tasks = dummyTasks
-        this.tasks = this.tasks.filter(task => task.isCompleted)
-      }
+      this.taskFilterStore.filter.status = value
+      this.tasksStore.getTasks()
     },
     filterByArchiveStatus(value) {
       if(value === "archived") {
@@ -515,17 +510,8 @@ export default {
       this.tasks = this.tasks.filter(task => task.dueDate >= start && task.dueDate <= end )
     },
     onReset() {
-      var { search, dates, completionStatus, archiveStatus, priorityLevel } = defaultFilters
-      var { sortOrder, sortBy } = defaultSort
-
-      this.search = search
-      this.dates = dates
-      this.selectedCompletionStatus = completionStatus
-      this.selectedArchiveStatus = archiveStatus
-      this.selectedPriorityLevel = priorityLevel
-      this.selectedSortOrder = sortOrder
-      this.selectedSortBy = sortBy
-      this.tasks = dummyTasks
+      this.taskFilterStore.resetFilters()
+      this.tasksStore.getTasks()
     },
     async editTask(task) {
 
