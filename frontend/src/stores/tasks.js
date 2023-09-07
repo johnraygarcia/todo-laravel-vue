@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { useTaskStore } from "./task";
 
 export const useTasksStore = defineStore('tasks', {
     state: () => ({
@@ -16,34 +17,39 @@ export const useTasksStore = defineStore('tasks', {
         },
         async getTasks(){
             this.isLoading = true;
-            await window.axios.get('/api/task', { params : {page : this.currentPage}}).then(result => {
-                this.tasks = result.data.data.map((task) => {
+            const taskStore = useTaskStore();
+            const {data, response} = await window.axios.get('/api/task', { params : {page : this.currentPage}})
 
-                    let prioLabel = 'low';
-                    switch (task.priority) {
-                        case 1:
-                            prioLabel = 'urgent'
-                            break;
-                        case 2:
-                            prioLabel = 'high'
-                            break;
-                        case 3:
-                            prioLabel = 'normal'
-                            break;
-                        case 4:
-                            prioLabel = 'low'
-                            break;
-                    }
-                    const pl = {
-                        key: prioLabel,
-                        value: task.priority
-                    }
-                    return { ...task, priorityLevel: pl}
-                });
-                this.currentPage = result.data.current_page;
-                this.lastPage = result.data.last_page;
-                this.isLoading = false;
-            })
+            this.tasks = await Promise.all(data.data.map(async(task) => {
+
+                // asign the tags
+                const taskTags = await taskStore.getTaskTags(task.id)
+
+                let prioLabel = 'low';
+                switch (task.priority) {
+                    case 1:
+                        prioLabel = 'urgent'
+                        break;
+                    case 2:
+                        prioLabel = 'high'
+                        break;
+                    case 3:
+                        prioLabel = 'normal'
+                        break;
+                    case 4:
+                        prioLabel = 'low'
+                        break;
+                }
+                const pl = {
+                    key: prioLabel,
+                    value: task.priority
+                }
+
+                return { ...task, priorityLevel: pl, tags: taskTags}
+            }));
+            this.currentPage = data.data.current_page;
+            this.lastPage = data.data.last_page;
+            this.isLoading = false;
         },
         async delete(id) {
             await window.axios.delete('/api/task/' + id).then(result => {

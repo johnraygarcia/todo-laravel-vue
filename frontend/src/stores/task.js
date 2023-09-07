@@ -7,9 +7,10 @@ export const useTaskStore = defineStore('task', {
         task: {
             priority: 3,
             due_date: new Date(),
-            tags: [{ id: 1, name: "tag1"}, { id: 2, name: "tag2" }]
+            tags: []
         },
-        attachments: []
+        attachments: [],
+        tags: []
     }),
     getters: {
         // computed methods
@@ -83,6 +84,21 @@ export const useTaskStore = defineStore('task', {
             window.axios.delete('/api/task/' + this.task.id + '/attachment/'+attachment.id ).then((response) => {
                 this.getTaskAttachments()
             })
+        },
+        getTags() {
+            window.axios.get('/api/tag')
+            .then((response)=> {
+                this.tags = response.data
+                console.log(response)
+            })
+        },
+        async getTaskTags(taskId) {
+            const { data } = await window.axios.get('/api/task/'+taskId+'/tag')
+            return data;
+        },
+        async createTag(tagName) {
+            const { data: response } = await window.axios.post('/api/tag', {'name': tagName})
+            return response
         }
 
     }

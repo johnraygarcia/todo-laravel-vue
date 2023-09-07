@@ -6,6 +6,43 @@
     },
     "paths": {
         "/api/task/{id}/attachment": {
+            "get": {
+                "tags": [
+                    "AttachFileToTask"
+                ],
+                "summary": "Get the attached files of task",
+                "description": "Get the attached files of task",
+                "operationId": "GetAttachedFiles",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Id of the task",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of attachments",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "data": {
+                                            "description": "List of attachments",
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/components/schemas/Attachment"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
             "post": {
                 "tags": [
                     "AttachFileToTask"
@@ -43,7 +80,7 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Register Successfully",
+                        "description": "Upload successful",
                         "content": {
                             "application/json": {
                                 "schema": {
@@ -409,6 +446,45 @@
                     }
                 ]
             }
+        },
+        "/api/task/{id}/tag": {
+            "get": {
+                "tags": [
+                    "Task"
+                ],
+                "summary": "Get all tags of a given task",
+                "description": "Get all tags of a given task",
+                "operationId": "GetAllTaskTags",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "description": "Search key for the title field",
+                        "required": true,
+                        "example": "1"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "List of tags of a given task",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/Tag"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "sanctum": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -455,16 +531,42 @@
                         "example": "1",
                         "nullable": "false"
                     },
+                    "task_id": {
+                        "description": "Task identifier",
+                        "type": "integer",
+                        "example": "1",
+                        "nullable": "false"
+                    },
                     "filename": {
                         "description": "Attachments filename",
                         "type": "string",
                         "example": "test-attachment.docx",
                         "nullable": "true"
                     },
+                    "created_at": {
+                        "description": "date created",
+                        "type": "string",
+                        "format": "date",
+                        "example": "2023-09-06T18:25:04.000000Z",
+                        "nullable": "false"
+                    },
+                    "updated_at": {
+                        "description": "date updated",
+                        "type": "string",
+                        "format": "date",
+                        "example": "2023-09-06T18:25:04.000000Z",
+                        "nullable": "false"
+                    },
+                    "path": {
+                        "description": "Path of the upoaded file",
+                        "type": "string",
+                        "example": "attachments\\/cover-letter-pd-1694024704.pdf",
+                        "nullable": "true"
+                    },
                     "type": {
                         "description": "file type extension of the attachment",
                         "type": "string",
-                        "example": "john.doe@todo.com",
+                        "example": "pdf",
                         "nullable": "false"
                     }
                 },
@@ -535,6 +637,14 @@
                         "description": "Sort order of a task",
                         "type": "integer",
                         "example": 1,
+                        "nullable": "true"
+                    },
+                    "tags": {
+                        "description": "Tags of the task",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Tag"
+                        },
                         "nullable": "true"
                     }
                 },

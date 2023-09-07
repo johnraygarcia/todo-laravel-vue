@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTaskRequest;
+use App\Models\Tag;
 use App\Models\Task;
 use Auth;
 use Illuminate\Support\Facades\DB;
@@ -47,8 +48,16 @@ class TaskController extends Controller
     **/
     public function create()
     {
-        return Response::json([
-            'data' => Task::create($this->request)
+        $task = Task::create($this->request);
+        if (null !== $this->request['tags']) {
+            foreach($this->request['tags'] as $tag) {
+                $tag = Tag::find($tag['id']);
+            }
+            $task->tags()->save($tag);
+        }
+
+        Response::json([
+            'data' => $task
         ], 201);
     }
 
@@ -108,6 +117,17 @@ class TaskController extends Controller
             'is_archived' => $data['is_archived'],
             'order' => $data['order']
         ]);
+
+        // clear all tags of task
+        $task->tags()->detach();
+
+        if (null !== $this->request['tags']) {
+            foreach($this->request['tags'] as $tag) {
+                $tagId = $tag['id'];
+                $tag = Tag::find($tagId);
+                $task->tags()->save($tag);
+            }
+        }
 
         return Response::json([], 200);
     }
@@ -189,7 +209,7 @@ class TaskController extends Controller
     *         required=false,
     *         example="asc",
     *     ),
-    *    @OA\Response(
+    *     @OA\Response(
     *          response=200,
     *          description="List of task",
     *          @OA\JsonContent(
@@ -269,5 +289,36 @@ class TaskController extends Controller
             // throw 401 exception error
             abort(401, $errorMessage);
         }
+    }
+
+    /**
+    * @OA\Get(
+    * path="/api/task/{id}/tag",
+    * operationId="GetAllTaskTags",
+    * tags={"Task"},
+    * summary="Get all tags of a given task",
+    * description="Get all tags of a given task",
+    * security={{"sanctum":{}}},
+    *     @OA\Parameter(
+    *         name="id",
+    *         description="Search key for the title field",
+    *         in="path",
+    *         required=true,
+    *         example="1"
+    *     ),
+    *     @OA\Response(
+    *          response=200,
+    *          description="List of tags of a given task",
+    *          @OA\JsonContent(
+    *               type="array",
+    *               @OA\Items(ref="#/components/schemas/Tag")
+    *          )
+    *    ),
+    * )
+    **/
+    public function getTaskTags($id)
+    {
+        $task = Task::findOrFail($id);
+        return $task->tags()->get();
     }
 }

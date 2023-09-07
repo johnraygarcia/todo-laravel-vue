@@ -86,51 +86,18 @@
                                 v-model="taskState.task.due_date"
                             />
 
-                            <v-select
-                                clearable
-                                chips
-                                label="Tags"
-                                :items="taskState.task.tags?.map(t => t.name)"
-                                v-model="taskState.task.tags"
-                                multiple
-                                variant="outlined"
-                            ></v-select>
-
-                            <v-select
-                                :items="taskState.task.tags?.map(t => t.name)"
-                                v-model="taskState.task.tags"
-                                label="Tags"
-                                chips
-                                tags
-                                :search-input.sync="search"
-                                clearable
-                                @paste="pasted"
-                                ></v-select>
-
                             <v-combobox
-                                v-model="taskState.task.tags"
                                 chips
-                                clearable
                                 multiple
-                                filled
-                                rounded
-                                append-icon=""
-                            >
-                                <template v-slot:selection="{ attrs, item, select, selected }">
-                                    <v-chip
-                                    small
-                                    v-bind="attrs"
-                                    :input-value="selected"
-                                    close
-                                    @click="select"
-                                    @click:close="remove(item)"
-                                    >
-                                    {{ item }}
-                                    </v-chip>
-                                </template>
-                            </v-combobox>
+                                label="Tags"
+                                :items="taskState.tags"
+                                item-title="name"
+                                item-value="id"
+                                v-model="taskState.task.tags"
+                                @update:model-value="updateTags"
+                            ></v-combobox>
 
-                            <FileUpload/>
+                            <FileUpload v-if="taskState.task.id"/>
                         </v-col>
                     </v-row>
                 </v-form>
@@ -168,10 +135,15 @@ import FileUpload from '@/components/FileUpload.vue'
 
 const appState = useAppStore()
 const taskState = useTaskStore()
+
+onMounted(()=> {
+    taskState.getTags()
+})
 </script>
 
 <script>
-    import { constants } from '@/helpers'
+import { constants } from '@/helpers'
+import { onMounted } from 'vue';
     export default {
         components: {
             FileUpload
@@ -188,6 +160,17 @@ const taskState = useTaskStore()
             required (v) {
                 return !!v || 'Field is required'
             },
+            async updateTags(e) {
+                const taskState = useTaskStore()
+                for(let i=0; i<taskState.task.tags.length; i++) {
+                    const tag = taskState.task.tags[i]
+                    if (typeof tag === "string") {
+                        // create a tag
+                        const tagNew = await taskState.createTag(tag)
+                        taskState.task.tags[i] = tagNew
+                    }
+                }
+            }
         },
     }
 </script>

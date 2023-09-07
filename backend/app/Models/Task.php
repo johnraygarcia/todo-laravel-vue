@@ -70,6 +70,15 @@ use Illuminate\Http\Request;
  *            nullable="true",
  *            example=1
  *        ),
+ *        @OA\Property(
+ *            property="tags",
+ *            description="Tags of the task",
+ *            type="array",
+ *            nullable="true",
+ *            @OA\Items(
+ *              ref="#/components/schemas/Tag"
+ *            )
+ *        ),
  *    )
  * )
  */

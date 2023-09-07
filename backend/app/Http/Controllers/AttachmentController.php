@@ -34,15 +34,15 @@ class AttachmentController extends Controller
     *           description="Attachment",
     *           @OA\MediaType(
     *               mediaType="multipart/form-data",
-        *           @OA\Schema(
-        *               @OA\Property(property="file", type="string", format="binary"),
-        *               required={"file"}
-        *           ),
+    *               @OA\Schema(
+    *                   @OA\Property(property="file", type="string", format="binary"),
+    *                   required={"file"}
+    *               ),
     *           ),
     *    ),
     *    @OA\Response(
     *          response=200,
-    *          description="Register Successfully",
+    *          description="Upload successful",
     *          @OA\JsonContent(
     *           ref="#/components/schemas/Attachment"
     *          ),
@@ -125,6 +125,35 @@ class AttachmentController extends Controller
         }
     }
 
+    /**
+    * @OA\Get(
+    * path="/api/task/{id}/attachment",
+    * operationId="GetAttachedFiles",
+    * tags={"AttachFileToTask"},
+    * summary="Get the attached files of task",
+    * description="Get the attached files of task",
+    *    @OA\Parameter(
+    *         name="id",
+    *         description="Id of the task",
+    *         in="path",
+    *         required=true
+    *    ),
+    *     @OA\Response(
+    *          response=200,
+    *          description="List of attachments",
+    *          @OA\JsonContent(
+    *               @OA\Property(
+    *                   property="data",
+    *                   type="array",
+    *                   description="List of attachments",
+    *                   @OA\Items(
+    *                       ref="#/components/schemas/Attachment"
+    *                   )
+    *               ),
+    *          ),
+    *    ),
+    * )
+    **/
     public function getAttachmentsByTask($taskId)
     {
         $task = Task::findOrFail($taskId);

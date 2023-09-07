@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import { useTasksStore } from '../stores/tasks'
 import TaskForm from '../components/TaskForm.vue'
 import Pagination from '../components/Pagination.vue'
@@ -7,8 +7,12 @@ import Snackbar from '../components/Snackbar.vue'
 
 const drawer = ref(null)
 const tasksStore = useTasksStore();
+const appStore = useAppStore();
 
-onMounted(() => {
+onBeforeMount(() => {
+  appStore.snackbarText = 'Loading...'
+  appStore.snackbarColor = 'info'
+  appStore.toggleSnackbar()
   tasksStore.getTasks();
 })
 
@@ -152,6 +156,7 @@ onMounted(() => {
 
     <v-row>
       <v-col
+        v-if="tasksStore.tasks"
         v-for="task in tasksStore.tasks"
         :key="task.id"
         cols="12"
@@ -196,8 +201,8 @@ onMounted(() => {
           <v-divider class="mx-4 mb-1"></v-divider>
 
           <div class="px-4">
-            <span class="mr-1" v-for="tag in task.tags" :key="tag.key">
-              <v-chip size="x-small" label :text="truncateTag(tag.title)"></v-chip>
+            <span class="mr-1" v-for="tag in task.tags" :key="tag.id">
+              <v-chip size="x-small" label :text="truncateTag(tag.name)"></v-chip>
             </span>
           </div>
 
@@ -284,6 +289,7 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 import { useTaskStore } from '@/stores/task';
 import { useAppStore } from '@/stores/app';
+import { onBeforeMount } from 'vue'
 
 var defaultFilters = {
   search: null,
@@ -511,7 +517,14 @@ export default {
       this.selectedSortBy = sortBy
       this.tasks = dummyTasks
     },
-    editTask(task) {
+    async editTask(task) {
+
+      // load the tags
+      const tags = await this.taskStore.getTaskTags(task.id)
+      task.tags = tags.map((tag)=> {
+        return {...tag,id: tag.pivot.tag_id}
+      })
+
       this.taskStore.task = task
       this.appStore.showTaskDialog = true;
     }
