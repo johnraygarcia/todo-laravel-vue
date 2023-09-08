@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { useTaskStore } from "./task";
 import { useTaskFiltersStore } from "./taskFilters";
+import { format, formatInTimeZone, utcToZonedTime } from 'date-fns-tz'
 
 export const useTasksStore = defineStore('tasks', {
     state: () => ({
@@ -31,11 +32,7 @@ export const useTasksStore = defineStore('tasks', {
                 sortOrder: taskFiltersStore.filter.sortOrder
             }})
 
-            this.tasks = await Promise.all(data.data.map(async(task) => {
-
-                // asign the tags
-                const taskTags = await taskStore.getTaskTags(task.id)
-
+            this.tasks = data.data.map((task) => {
                 let prioLabel = 'low';
                 switch (task.priority) {
                     case 1:
@@ -56,10 +53,13 @@ export const useTasksStore = defineStore('tasks', {
                     value: task.priority
                 }
 
-                return { ...task, priorityLevel: pl, tags: taskTags}
-            }));
-            this.currentPage = data.data.current_page;
-            this.lastPage = data.data.last_page;
+                return {
+                    ...task,
+                    priorityLevel: pl
+                }
+            });
+            this.currentPage = data.current_page;
+            this.lastPage = data.last_page;
             this.isLoading = false;
         },
         async delete(id) {

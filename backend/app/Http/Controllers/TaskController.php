@@ -262,37 +262,38 @@ class TaskController extends Controller
         $priority = $this->request->query('priority');
         $dateFilter = $this->request->query('dateFilter');
 
-        $tasks = DB::table('tasks as t')
-            ->where('t.user_id', '=', Auth::user()->id)
+        $tasks = Task::with(['tags'])
+            ->where('user_id', '=', Auth::user()->id)
             ->when($searchKey, function($query, $searchKey){
-                return $query->where("t.title", "ilike", "%{$searchKey}%");
+                return $query->where("title", "ilike", "%{$searchKey}%");
             })
             ->when($status, function($query, $status){
                 if ($status === "todo") {
-                    return $query->where("t.status", "=", "false");
+                    return $query->where("status", "=", "false");
                 } else {
-                    return $query->where("t.status", "=", "true");
+                    return $query->where("status", "=", "true");
                 }
             })
             ->when($archived, function($query, $status){
                 if ($status === "archived") {
-                    return $query->where("t.is_archived", "=", "true");
+                    return $query->where("is_archived", "=", "true");
                 } else {
-                    return $query->where("t.is_archived", "=", "false");
+                    return $query->where("is_archived", "=", "false");
                 }
             })
             ->when($priority, function($query, $priority){
-                return $query->where("t.priority", "=", (int)$priority);
+                return $query->where("priority", "=", (int)$priority);
             })
             ->when($dateFilter, function($query, array $dateFilter){
-                $startDate = (new DateTime($dateFilter[0]))->setTimezone(new DateTimeZone('utc'))->format('Y-m-d H:i:s');
-                $endDate = (new DateTime($dateFilter[1]))->setTimezone(new DateTimeZone('utc'))->format('Y-m-d H:i:s');
+                $startDate = (new DateTime($dateFilter[0]))->format('Y-m-d');
+                $endDate = (new DateTime($dateFilter[1]))->format('Y-m-d');
                 return $query->where(function($query) use ($startDate, $endDate) {
-                    $query->where('due_date', '>=', $startDate);
-                    $query->where('due_date', '<=', $endDate);
+                    $query->whereRaw("date(due_date) >= ?", [$startDate]);
+                    $query->whereRaw("date(due_date) <= ?", [$endDate]);
                     return $query;
                 });
             })
+            ->with(['tags'])
             ->orderBy($this->sanitizedSortBy(), $this->sanitizedSortOrder())
             ->paginate(self::ITEMS_PER_PAGE);
 

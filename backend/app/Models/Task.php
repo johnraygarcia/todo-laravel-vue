@@ -97,9 +97,9 @@ class Task extends Model
         $task = new Task($request->all());
         $user = Auth::user();
 
-        $dueDate = $request->due_date;
-        if ($dueDate) {
-            $task = self::setDueDate($task, $dueDate);
+        $priority = $request->priority;
+        if (null === $priority) {
+            $task->priority = 4;
         }
 
         $task->setOrder($user->tasks()->count() + 1);
@@ -133,13 +133,6 @@ class Task extends Model
     public function setOrder(int $order)
     {
         $this->order = $order;
-    }
-
-    static function setDueDate(Task $task, $dueDate): self
-    {
-        $d = (new DateTime($dueDate))->setTimezone(new DateTimeZone('UTC'));
-        $dueDate = $d->format('Y-m-d H:i:s');
-        return $task;
     }
 
 }

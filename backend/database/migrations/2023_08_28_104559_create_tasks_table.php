@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('title')->nullable(false);
             $table->string('description');
             $table->foreignIdFor(User::class);
-            $table->timestamp('due_date');
+            $table->timestampTz('due_date')->nullable(true);
             $table->boolean('status');
             $table->smallInteger('priority');
             $table->boolean('is_archived');

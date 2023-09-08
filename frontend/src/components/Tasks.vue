@@ -97,8 +97,9 @@ onBeforeMount(() => {
               <v-label class="mb-4 ml-4">Due Date (Date Range)</v-label>
               <VueDatePicker
                 class="px-4"
-                :model-value="dates"
-                @update:model-value="onChangeDateRange"
+                v-model="dates"
+                :emit-timezone="Intl.DateTimeFormat().resolvedOptions().timeZone"
+                @update:model-timezone-value="onChangeDateRange"
                 range
                 clearable
                 placeholder="Select Due Dates"
@@ -205,7 +206,7 @@ onBeforeMount(() => {
 
           <div class="px-4">
             <span class="mr-1" v-for="tag in task.tags" :key="tag.id">
-              <v-chip size="x-small" label :text="truncateTag(tag.name)"></v-chip>
+              <v-chip size="x-small" label :text="tag.name"></v-chip>
             </span>
           </div>
 
@@ -329,10 +330,10 @@ export default {
       { label: "Archived", value: "1"},
     ],
     priorityLevelOptions: [
-      { label: "Urgent", value: "1"},
-      { label: "High", value: "2"},
-      { label: "Normal", value: "3"},
-      { label: "Low", value: "4"},
+      { label: "Urgent", value: 1},
+      { label: "High", value: 2},
+      { label: "Normal", value: 3},
+      { label: "Low", value: 4},
     ],
     sortOrderOptions: [
       { label: "Ascending", value: "asc"},
@@ -379,6 +380,7 @@ export default {
     searchTasks() {
 
       this.taskFilterStore.filter.name = this.searchKey
+      this.tasksStore.currentPage = null
       clearTimeout(this._debounceTimeout)
       this.tasksStore.isLoading=true
 
@@ -402,9 +404,6 @@ export default {
     },
     truncateDesc(desc) {
       return desc.length > 80 ? desc.substring(0, 80) + "..." : desc
-    },
-    truncateTag(tag) {
-      return tag.length > 15 ? tag.substring(0, 15) + "..." : tag
     },
     getPriorityDetails(level) {
       switch(level) {
@@ -436,37 +435,46 @@ export default {
     },
     filterByCompletionStatus(value) {
       this.taskFilterStore.filter.status = value
+      this.tasksStore.currentPage = null
       this.tasksStore.getTasks()
     },
     filterByArchiveStatus(value) {
       this.taskFilterStore.filter.archived = value
+      this.tasksStore.currentPage = null
       this.tasksStore.getTasks()
     },
     filterByPriority(value) {
       this.taskFilterStore.filter.priority = value
+      this.tasksStore.currentPage = null
       this.tasksStore.getTasks()
     },
     sortOrderBy(order) {
       this.taskFilterStore.filter.sortOrder = order
+      this.tasksStore.currentPage = null
       this.tasksStore.getTasks()
     },
     sortFieldBy(field) {
       this.taskFilterStore.filter.sortBy = field
+      this.tasksStore.currentPage = null
       this.tasksStore.getTasks()
     },
     onChangeDateRange(dates) {
-      this.dates = dates
-      var [ start, end ] = dates;
-      this.taskFilterStore.filter.dateFilter = dates
-      this.tasksStore.getTasks()
+
+      if (dates && dates.length) {
+        this.taskFilterStore.filter.dateFilter = dates
+        this.tasksStore.currentPage = null
+        this.tasksStore.getTasks()
+      }
     },
     onReset() {
       this.taskFilterStore.resetFilters()
       this.selectedCompletionStatus = null
       this.selectedArchiveStatus = null
+      this.selectedPriorityLevel = null
       this.dates = null
       this.selectedSortOrder = null
       this.selectedSortBy = null
+      this.tasksStore.currentPage = null
       this.tasksStore.getTasks()
     },
     async editTask(task) {

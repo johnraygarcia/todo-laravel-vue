@@ -31,7 +31,6 @@ class StoreTaskRequest extends FormRequest
         return [
             'title' => 'required',
             'status' => 'required',
-            'priority' => 'required',
         ];
     }
 }

@@ -5,7 +5,7 @@ import { useAppStore } from "./app";
 export const useTaskStore = defineStore('task', {
     state: () => ({
         task: {
-            priority: 3,
+            priority: 4,
             due_date: new Date(),
             tags: []
         },
@@ -30,7 +30,7 @@ export const useTaskStore = defineStore('task', {
                     appStore.showTaskDialog = false;
                     appStore.snackbarText = 'Task is successfully created'
                     appStore.showSnackbar = true
-                    this.task = {}
+                    this.task = {priority: 4}
                 })
                 .catch((errors) => {
                     console.log(errors);

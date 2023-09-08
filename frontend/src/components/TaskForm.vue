@@ -83,6 +83,7 @@
                                 :enable-time-picker="false"
                                 format="yyyy-MM-dd"
                                 :teleport="true"
+                                utc="true"
                                 v-model="taskState.task.due_date"
                             />
 
