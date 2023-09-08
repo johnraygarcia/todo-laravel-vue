@@ -6,7 +6,8 @@ export const useTaskFiltersStore = defineStore('taskFilters', {
             name: null,
             priority: null,
             due_date: null,
-            status: null
+            status: null,
+            archived: null
         }
     }),
     actions: {

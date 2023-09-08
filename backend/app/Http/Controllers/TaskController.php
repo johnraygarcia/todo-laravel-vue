@@ -256,6 +256,8 @@ class TaskController extends Controller
     {
         $searchKey = $this->request->query('searchKey') ?? null;
         $status = $this->resolveStatusFilter();
+        $archived = $this->resolveArchivedStatusFilter();
+        $priority = $this->request->query('priority');
 
         $tasks = DB::table('tasks as t')
             ->where('t.user_id', '=', Auth::user()->id)
@@ -268,6 +270,16 @@ class TaskController extends Controller
                 } else {
                     return $query->where("t.status", "=", "true");
                 }
+            })
+            ->when($archived, function($query, $status){
+                if ($status === "archived") {
+                    return $query->where("t.is_archived", "=", "true");
+                } else {
+                    return $query->where("t.is_archived", "=", "false");
+                }
+            })
+            ->when($priority, function($query, $priority){
+                return $query->where("t.priority", "=", (int)$priority);
             })
             ->orderBy($this->sanitizedSortBy(), $this->sanitizedSortOrder())
             ->paginate(self::ITEMS_PER_PAGE);
@@ -284,6 +296,21 @@ class TaskController extends Controller
                 break;
             case "0":
                 $status = 'todo';
+                break;
+        }
+
+        return $status;
+    }
+
+    private function resolveArchivedStatusFilter()
+    {
+        $status = null;
+        switch($this->request->query('archived')) {
+            case "1":
+                $status = 'archived';
+                break;
+            case "0":
+                $status = 'active';
                 break;
         }
 

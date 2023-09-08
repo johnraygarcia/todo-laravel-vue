@@ -24,7 +24,7 @@ onBeforeMount(() => {
         <v-autocomplete
           auto-select-first
           clearable
-          :loading="taskStore.isLoading"
+          :loading="tasksStore.isLoading"
           v-model="searchKey"
           @update:search="searchTasks"
           :items="tasksStore.tasks"
@@ -274,7 +274,6 @@ onBeforeMount(() => {
       </v-card-actions>
     </v-card>
   </v-dialog>
-
   <Snackbar />
 </template>
 
@@ -325,14 +324,14 @@ export default {
       { label: "Completed", value: "1"},
     ],
     archiveStatusOptions: [
-      { label: "Active", value: "active"},
-      { label: "Archived", value: "archived"},
+      { label: "Active", value: "0"},
+      { label: "Archived", value: "1"},
     ],
     priorityLevelOptions: [
-      { label: "Urgent", value: "urgent"},
-      { label: "High", value: "high"},
-      { label: "Normal", value: "normal"},
-      { label: "Low", value: "low"},
+      { label: "Urgent", value: "1"},
+      { label: "High", value: "2"},
+      { label: "Normal", value: "3"},
+      { label: "Low", value: "4"},
     ],
     sortOrderOptions: [
       { label: "Ascending", value: "asc"},
@@ -379,8 +378,8 @@ export default {
     searchTasks() {
 
       this.taskFilterStore.filter.name = this.searchKey
-
       clearTimeout(this._debounceTimeout)
+      this.tasksStore.isLoading=true
 
       this._debounceTimeout = setTimeout(() => {
         this.tasksStore.getTasks()
@@ -439,31 +438,12 @@ export default {
       this.tasksStore.getTasks()
     },
     filterByArchiveStatus(value) {
-      if(value === "archived") {
-        this.tasks = dummyTasks
-        this.tasks = this.tasks.filter(task => task.isArchived)
-      } else {
-        this.tasks = dummyTasks
-        this.tasks = this.tasks.filter(task => !task.isArchived)
-      }
+      this.taskFilterStore.filter.archived = value
+      this.tasksStore.getTasks()
     },
     filterByPriority(value) {
-      this.tasks = dummyTasks
-
-      switch(value) {
-        case "urgent":
-          this.tasks = this.tasks.filter(task => task.priorityLevel.key === value)
-          break;
-        case "high":
-          this.tasks = this.tasks.filter(task => task.priorityLevel.key === value)
-          break;
-        case "normal":
-          this.tasks = this.tasks.filter(task => task.priorityLevel.key === value)
-          break;
-        case "low":
-          this.tasks = this.tasks.filter(task => task.priorityLevel.key === value)
-          break;
-      }
+      this.taskFilterStore.filter.priority = value
+      this.tasksStore.getTasks()
     },
     sortTasks(order) {
       this.tasks = dummyTasks
@@ -512,6 +492,8 @@ export default {
     onReset() {
       this.taskFilterStore.resetFilters()
       this.tasksStore.getTasks()
+      this.selectedCompletionStatus = null
+      this.selectedArchiveStatus = null
     },
     async editTask(task) {
 

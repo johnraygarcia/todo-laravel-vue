@@ -23,7 +23,9 @@ export const useTasksStore = defineStore('tasks', {
             const {data, response} = await window.axios.get('/api/task', { params : {
                 page : this.currentPage,
                 searchKey: taskFiltersStore.filter.name,
-                status: taskFiltersStore.filter.status
+                status: taskFiltersStore.filter.status,
+                archived: taskFiltersStore.filter.archived,
+                priority: taskFiltersStore.filter.priority,
             }})
 
             this.tasks = await Promise.all(data.data.map(async(task) => {
