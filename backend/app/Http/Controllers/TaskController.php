@@ -6,6 +6,8 @@ use App\Http\Requests\StoreTaskRequest;
 use App\Models\Tag;
 use App\Models\Task;
 use Auth;
+use DateTime;
+use DateTimeZone;
 use Illuminate\Support\Facades\DB;
 use Response;
 
@@ -52,8 +54,8 @@ class TaskController extends Controller
         if (null !== $this->request['tags']) {
             foreach($this->request['tags'] as $tag) {
                 $tag = Tag::find($tag['id']);
+                $task->tags()->save($tag);
             }
-            $task->tags()->save($tag);
         }
 
         Response::json([
@@ -258,6 +260,7 @@ class TaskController extends Controller
         $status = $this->resolveStatusFilter();
         $archived = $this->resolveArchivedStatusFilter();
         $priority = $this->request->query('priority');
+        $dateFilter = $this->request->query('dateFilter');
 
         $tasks = DB::table('tasks as t')
             ->where('t.user_id', '=', Auth::user()->id)
@@ -280,6 +283,15 @@ class TaskController extends Controller
             })
             ->when($priority, function($query, $priority){
                 return $query->where("t.priority", "=", (int)$priority);
+            })
+            ->when($dateFilter, function($query, array $dateFilter){
+                $startDate = (new DateTime($dateFilter[0]))->setTimezone(new DateTimeZone('utc'))->format('Y-m-d H:i:s');
+                $endDate = (new DateTime($dateFilter[1]))->setTimezone(new DateTimeZone('utc'))->format('Y-m-d H:i:s');
+                return $query->where(function($query) use ($startDate, $endDate) {
+                    $query->where('due_date', '>=', $startDate);
+                    $query->where('due_date', '<=', $endDate);
+                    return $query;
+                });
             })
             ->orderBy($this->sanitizedSortBy(), $this->sanitizedSortOrder())
             ->paginate(self::ITEMS_PER_PAGE);
@@ -330,13 +342,28 @@ class TaskController extends Controller
 
     private function sanitizedSortOrder(): string
     {
-        $orderBy = $this->request->query('sortOrder') ?? 'asc';
-        if (in_array($orderBy, ['asc', 'desc']))
+        $sortOrder = $this->resolveSortOrder();
+        if (in_array($sortOrder, ['asc', 'desc']))
         {
-            return $orderBy;
+            return $sortOrder;
         }
 
         return 'asc';
+    }
+
+    private function resolveSortOrder()
+    {
+        $sortOrder = $this->request->query('sortOrder') ?? 'asc';
+        $sortField = $this->request->query('sortBy');
+        if ($sortField === "priority" && $sortOrder === "asc") {
+            return "desc";
+        }
+
+        if ($sortField === "priority" && $sortOrder === "desc") {
+            return "asc";
+        }
+
+        return $sortOrder;
     }
 
     private function checkUserIsOwner(Task $task, $errorMessage): void

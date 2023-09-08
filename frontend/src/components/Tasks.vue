@@ -97,7 +97,8 @@ onBeforeMount(() => {
               <v-label class="mb-4 ml-4">Due Date (Date Range)</v-label>
               <VueDatePicker
                 class="px-4"
-                :model-value="dates" @update:model-value="onChangeDateRange"
+                :model-value="dates"
+                @update:model-value="onChangeDateRange"
                 range
                 clearable
                 placeholder="Select Due Dates"
@@ -129,7 +130,7 @@ onBeforeMount(() => {
                     :key="value"
                     :value="value"
                     :label="label"
-                    @click="sortTasks(value)"
+                    @click="sortOrderBy(value)"
                 />
               </v-radio-group>
 
@@ -143,7 +144,7 @@ onBeforeMount(() => {
                     :key="value"
                     :value="value"
                     :label="label"
-                    @click="sortTasks(value)"
+                    @click="sortFieldBy(value)"
                 />
               </v-radio-group>
 
@@ -338,10 +339,10 @@ export default {
       { label: "Descending", value: "desc"},
     ],
     sortByOptions: [
-      { label: "Created at", value: "createdAt"},
-      { label: "Completed at", value: "completedAt"},
-      { label: "Priority level", value: "priorityLevel"},
-      { label: "Due date", value: "dueDate"},
+      { label: "Created at", value: "created_at"},
+      { label: "Completed at", value: "completed_at"},
+      { label: "Priority level", value: "priority"},
+      { label: "Due date", value: "due_date"},
     ],
     selectedCompletionStatus: null,
     selectedArchiveStatus: null,
@@ -445,55 +446,28 @@ export default {
       this.taskFilterStore.filter.priority = value
       this.tasksStore.getTasks()
     },
-    sortTasks(order) {
-      this.tasks = dummyTasks
-
-      switch(this.selectedSortBy) {
-        case "createdAt":
-          if(order === "desc") {
-            this.tasks = this.tasks.sort((a,b) => b.createdAt - a.createdAt)
-            break;
-          } else {
-            this.tasks = this.tasks.sort((a,b) => a.createdAt - b.createdAt)
-            break;
-          }
-        case "completedAt":
-          if(order === "desc") {
-            this.tasks = this.tasks.sort((a,b) => b.completedAt - a.completedAt)
-            break;
-          } else {
-            this.tasks = this.tasks.sort((a,b) => a.completedAt - b.completedAt)
-            break;
-          }
-        case "priorityLevel":
-          if(order === "desc") {
-            this.tasks = this.tasks.sort((a,b) => b.priorityLevel.value - a.priorityLevel.value)
-            break;
-          } else {
-            this.tasks = this.tasks.sort((a,b) => a.priorityLevel.value - b.priorityLevel.value)
-            break;
-          }
-        case "dueDate":
-          if(order === "desc") {
-            this.tasks = this.tasks.sort((a,b) => b.dueDate - a.dueDate)
-            break;
-          } else {
-            this.tasks = this.tasks.sort((a,b) => a.dueDate - b.dueDate)
-            break;
-          }
-      }
+    sortOrderBy(order) {
+      this.taskFilterStore.filter.sortOrder = order
+      this.tasksStore.getTasks()
+    },
+    sortFieldBy(field) {
+      this.taskFilterStore.filter.sortBy = field
+      this.tasksStore.getTasks()
     },
     onChangeDateRange(dates) {
       this.dates = dates
       var [ start, end ] = dates;
-      this.tasks = dummyTasks
-      this.tasks = this.tasks.filter(task => task.dueDate >= start && task.dueDate <= end )
+      this.taskFilterStore.filter.dateFilter = dates
+      this.tasksStore.getTasks()
     },
     onReset() {
       this.taskFilterStore.resetFilters()
-      this.tasksStore.getTasks()
       this.selectedCompletionStatus = null
       this.selectedArchiveStatus = null
+      this.dates = null
+      this.selectedSortOrder = null
+      this.selectedSortBy = null
+      this.tasksStore.getTasks()
     },
     async editTask(task) {
 

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Auth;
 use DateTime;
+use DateTimeZone;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -95,6 +96,12 @@ class Task extends Model
 
         $task = new Task($request->all());
         $user = Auth::user();
+
+        $dueDate = $request->due_date;
+        if ($dueDate) {
+            $task = self::setDueDate($task, $dueDate);
+        }
+
         $task->setOrder($user->tasks()->count() + 1);
         $user->tasks()->save($task);
         return $task;
@@ -126,6 +133,13 @@ class Task extends Model
     public function setOrder(int $order)
     {
         $this->order = $order;
+    }
+
+    static function setDueDate(Task $task, $dueDate): self
+    {
+        $d = (new DateTime($dueDate))->setTimezone(new DateTimeZone('UTC'));
+        $dueDate = $d->format('Y-m-d H:i:s');
+        return $task;
     }
 
 }

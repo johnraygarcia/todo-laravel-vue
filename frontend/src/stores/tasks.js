@@ -14,7 +14,7 @@ export const useTasksStore = defineStore('tasks', {
     },
     actions: {
         reset () {
-            this.tasks = {}
+            this.tasks = []
         },
         async getTasks(){
             this.isLoading = true;
@@ -26,6 +26,9 @@ export const useTasksStore = defineStore('tasks', {
                 status: taskFiltersStore.filter.status,
                 archived: taskFiltersStore.filter.archived,
                 priority: taskFiltersStore.filter.priority,
+                dateFilter: taskFiltersStore.filter.dateFilter,
+                sortBy: taskFiltersStore.filter.sortBy,
+                sortOrder: taskFiltersStore.filter.sortOrder
             }})
 
             this.tasks = await Promise.all(data.data.map(async(task) => {
