@@ -18,9 +18,10 @@ pipeline {
                 sh 'docker system prune -a --volumes -f'
             }
         }
-        stage ("Start container") {
+        stage ("Start container and Run composer install") {
             steps {
                 sh 'docker compose -f /var/lib/jenkins/workspace/todoMaster-deployment/backend/docker-compose.yaml up -d'
+                sh 'cd /var/lib/jenkins/workspace/todoMaster-deployment/backend/ && composer install'
             }
         }
     }
