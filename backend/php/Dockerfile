@@ -8,3 +8,5 @@ ADD https://github.com/mlocati/docker-php-extension-installer/releases/download/
 RUN apk add libpq-dev \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
     && docker-php-ext-install pdo pdo_pgsql pgsql
+
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
