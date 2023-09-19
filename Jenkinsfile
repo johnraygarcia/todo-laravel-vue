@@ -20,7 +20,7 @@ pipeline {
         }
         stage ("Start container") {
             steps {
-                sh 'docker compose -f /var/lib/jenkins/workspace/todoMaster-deployment/backend/docker-compose.yaml'
+                sh 'docker compose up -f /var/lib/jenkins/workspace/todoMaster-deployment/backend/docker-compose.yaml'
                 sh 'docker compose ps'
             }
         }
