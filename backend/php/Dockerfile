@@ -14,7 +14,10 @@ COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
 # Set user and group
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
+ADD ./php/setup.sh /setup.sh
+RUN chmod +x /setup.sh
+
 # Switch to user
 USER appuser
 
-RUN composer install
+CMD ["sh", "/setup.sh"]
