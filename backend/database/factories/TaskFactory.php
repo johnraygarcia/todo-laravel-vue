@@ -4,12 +4,15 @@ namespace Database\Factories;
 
 use App\Models\Task;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Task>
  */
 class TaskFactory extends Factory
 {
+
+    use RefreshDatabase;
 
     protected $model = Task::class;
 

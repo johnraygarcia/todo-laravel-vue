@@ -19,8 +19,8 @@ pipeline {
         }
         stage ("Start container and Run composer install") {
             steps {
-                sh 'docker compose -f /var/lib/jenkins/workspace/todoMaster-deployment/backend/docker-compose.yaml up -d'
-                sh 'cd /var/lib/jenkins/workspace/todoMaster-deployment/backend/ && composer install'
+                sh 'docker compose -f /var/jenkins_home/workspace/todoMaster/backend/docker-compose.yaml up -d'
+                sh 'cd /var/jenkins_home/workspace/todoMaster/backend && composer install'
             }
         }
     }
