@@ -1,4 +1,12 @@
+FROM composer as backend-deps
+WORKDIR /app
+COPY composer.* ./
+RUN composer install --ignore-platform-reqs
+
 FROM php:8.1-fpm-alpine
+
+ARG uid=1000
+ARG gid=1000
 
 RUN apk update
 
@@ -9,4 +17,4 @@ RUN apk add libpq-dev \
     && docker-php-ext-configure pgsql -with-pgsql=/usr/local/pgsql \
     && docker-php-ext-install pdo pdo_pgsql pgsql
 
-COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+COPY --from=backend-deps --chown=user:user /app/vendor vendor
