@@ -1,7 +1,7 @@
 FROM composer as backend-deps
 WORKDIR /app
 COPY composer.* ./
-RUN cp .env.example ./.env
+RUN cp ./backend/.env.example ./.env
 RUN composer install --ignore-platform-reqs
 
 FROM php:8.1-fpm-alpine
