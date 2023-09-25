@@ -21,7 +21,8 @@ pipeline {
             steps {
                 sh 'docker compose -f /var/jenkins_home/workspace/todoMaster/backend/docker-compose.yaml up -d'
                 //sh 'cd /var/jenkins_home/workspace/todoMaster/backend && composer install --no-ansi --no-interaction --no-progress --optimize-autoloader'
-                sh 'cp .env.example .env'
+                sh 'echo pwd'
+                //sh 'cp .env.example .env'
             }
         }
     }
