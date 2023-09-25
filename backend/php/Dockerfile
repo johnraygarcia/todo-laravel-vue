@@ -1,8 +1,7 @@
 FROM composer as backend-deps
 WORKDIR /app
 COPY composer.* ./
-COPY ./.env.example ./.env
-RUN composer install --ignore-platform-reqs
+RUN composer install --ignore-platform-reqs --no-ansi --no-interaction --no-progress --optimize-autoloader
 
 FROM php:8.1-fpm-alpine
 
